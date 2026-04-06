@@ -13,37 +13,17 @@ import json
 INPUT_FILE  = "findings.json"
 OUTPUT_FILE = "prompts.json"
 
-# Thresholds that map numeric stats to visual traits.
-# Adjust these to tune character appearances.
-THRESHOLDS = {
-    "pr_size": {
-        "large": 500,       # total lines changed → big PR
-        "small": 100,
-    },
-    "merge_rate": {
-        "high": 0.75,
-        "low":  0.40,
-    },
-    "merge_time_minutes": {
-        "fast": 60 * 24,        # ≤ 1 day
-        "slow": 60 * 24 * 7,   # ≥ 1 week
-    },
-    "pct_zero_star": {
-        "high": 0.60,   # mostly obscure repos
-        "low":  0.20,   # mostly popular repos
-    },
-    "issue_linking": {
-        "high": 0.40,
-        "low":  0.10,
-    },
-    "churn": {
-        "high": 0.80,   # heavy rewriting
-        "low":  0.20,
-    },
-    "comments": {
-        "high": 3.0,
-        "low":  1.0,
-    },
+# Expected real-world (min, max) range for each numeric stat across all agents.
+# Values outside the range are clamped to [0, 1] during normalisation.
+# Adjust these if the dataset produces values outside these bounds.
+STAT_RANGES = {
+    "median_pr_size":            (0,    2000),      # total lines changed
+    "merge_rate":                (0.0,  1.0),
+    "median_merge_time_minutes": (0,    60 * 24 * 14),  # 0 → 2 weeks
+    "pct_zero_star_repos":       (0.0,  1.0),
+    "issue_linking_rate":        (0.0,  1.0),
+    "churn_ratio":               (0.0,  2.0),
+    "median_comments":           (0,    10),
 }
 
 # File extension → specialty bucket
@@ -55,12 +35,110 @@ FILE_TYPE_MAP: dict[str, set[str]] = {
 }
 # ──────────────────────────────────────────────────────────────────────────────
 
+# ─── DESCRIPTION LADDERS ──────────────────────────────────────────────────────
+# Each ladder has 5 rungs ordered from lowest to highest intensity.
+# pick() maps a 0–1 score onto the appropriate rung.
+
+# 1. PR Size → Scope  (higher score = bigger head)
+PR_SIZE_LADDER = [
+    "compact refined facial features, perfectly proportioned head",
+    "slightly wider-than-normal forehead, gently broadened jaw",
+    "noticeably prominent forehead, moderately exaggerated head proportions",
+    "large bulging forehead, heavy exaggerated jaw, oversized head",
+    "massive oversized bulging forehead, enormous exaggerated jaw, "
+    "giga-brain overengineered head proportions",
+]
+
+# 2. Merge Rate → Success Rate  (higher score = healthier, more confident)
+MERGE_RATE_LADDER = [
+    "visible facial bruises, dented crooked nose, battle-worn expression, "
+    "dejected sad eyes, rejection energy",
+    "faint scuff marks on skin, slightly downturned mouth, weary look",
+    "neutral composed expression, slightly uneven skin tone, "
+    "hint of cautious optimism",
+    "clear healthy skin, symmetrical features, calm confident expression",
+    "glowing luminous skin, perfectly symmetrical face, "
+    "confident smirk, radiant approved-chad energy",
+]
+
+# 3. Merge Time → Speed  (higher score = faster = sharper; lower score = slower = more aged)
+#    NOTE: score is inverted before use — slow merge time → high raw value → low speed score
+MERGE_SPEED_LADDER = [
+    "deep forehead wrinkles, heavy sagging skin, exhausted drooping eyes, "
+    "thick beard stubble, aged-by-the-process appearance",
+    "noticeable crow's feet, slightly sunken eyes, faint beard shadow, tired look",
+    "faint crow's feet around the eyes, slightly tired but alert expression",
+    "clean sharp facial features, alert bright eyes, fresh appearance",
+    "razor-sharp crisp facial features, bright energetic eyes, "
+    "subtle speed-lines at the edges of the body",
+]
+
+# 4. Zero-Star Repos → Prestige  (higher score = more zero-star = less prestigious)
+#    NOTE: score is inverted — high pct_zero_star → low prestige score
+PRESTIGE_LADDER = [
+    "drab worn-out clothing, muted desaturated colors, "
+    "dim flat lighting, underground indie aesthetic",
+    "plain casual clothes, modest neutral lighting, low-key unassuming look",
+    "smart-casual business attire, neutral even lighting, "
+    "mid-tier professional aesthetic",
+    "polished business suit, warm flattering lighting, quietly distinguished air",
+    "golden warm halo glow, immaculate luxury suit, "
+    "dramatic spotlight from above, celebrity developer energy",
+]
+
+# 5. Issue Linking → Organization  (higher score = more organised)
+ORGANIZATION_LADDER = [
+    "wild chaotic hair flying in all directions, unfocused darting eyes, "
+    "faint chaotic scribble marks floating around the head",
+    "slightly dishevelled hair, distracted gaze, loosely held crumpled note",
+    "loosely styled hair, relaxed posture, casually holding a sticky note",
+    "neatly styled hair, attentive focused eyes, small notepad in hand",
+    "neat wire-frame glasses, precisely combed hair, "
+    "clipboard tucked under arm, organized structured demeanor",
+]
+
+# 6. Churn Ratio → Stability  (higher score = more churn = less stable)
+#    NOTE: score is inverted — high churn → low stability score
+STABILITY_LADDER = [
+    "patchwork skin with prominent stitched seams, deep Frankenstein-like scars "
+    "across cheeks, constantly-rewriting-himself appearance",
+    "several shallow scars and visible skin patches, noticeably uneven texture",
+    "skin with a few minor blemishes and shallow scuff marks, "
+    "slightly uneven but mostly intact surface",
+    "smooth even skin with only the faintest of marks",
+    "perfectly smooth marble-like flawless skin texture",
+]
+
+# 8. Developer Interaction → Sociability  (higher score = more social)
+SOCIABILITY_LADDER = [
+    "blank stoic stare, completely empty white background, "
+    "lone-wolf isolated atmosphere",
+    "reserved quiet expression, sparse empty background, minimal presence",
+    "mild attentive expression, one or two vague figures in the distance",
+    "warm open expression, a small group of figures visible in the background",
+    "highly expressive animated face, admiring silhouetted figures "
+    "visible in the background, small speech bubbles floating nearby",
+]
+# ──────────────────────────────────────────────────────────────────────────────
+
 BASE_PROMPT = (
     "Hyper-realistic full-body portrait of Handsome Squidward on a pure white background. "
     "Photorealistic cartoon style. Head-to-toe visible. Slightly uncanny and exaggerated. "
     "Character is standing upright, facing slightly toward the viewer. "
     "Professional studio lighting. Ultra-detailed. "
 )
+
+
+def normalise(value: float, stat_key: str) -> float:
+    """Map a raw stat value to a 0.0–1.0 score using the configured range."""
+    lo, hi = STAT_RANGES[stat_key]
+    return max(0.0, min(1.0, (value - lo) / (hi - lo)))
+
+
+def pick(score: float, ladder: list[str]) -> str:
+    """Select the ladder rung that best matches a 0.0–1.0 score."""
+    idx = round(score * (len(ladder) - 1))
+    return ladder[idx]
 
 
 def classify_file_specialty(top_file_types: list[str]) -> str:
@@ -76,106 +154,52 @@ def classify_file_specialty(top_file_types: list[str]) -> str:
 
 def build_trait_fragments(stats: dict) -> list[str]:
     """Return a list of visual trait strings derived from agent statistics."""
-    t = THRESHOLDS
     traits: list[str] = []
 
     # 1. PR Size → Scope (forehead / head proportions)
-    size = stats["median_pr_size"]
-    if size >= t["pr_size"]["large"]:
-        traits.append(
-            "oversized bulging forehead, exaggerated massive jaw, "
-            "giga-brain overengineered head proportions"
-        )
-    elif size <= t["pr_size"]["small"]:
-        traits.append("compact refined facial features, perfectly proportioned head")
-    else:
-        traits.append("slightly prominent forehead, mildly exaggerated head proportions")
+    #    High value = bigger PR = more extreme head
+    traits.append(pick(
+        normalise(stats["median_pr_size"], "median_pr_size"),
+        PR_SIZE_LADDER,
+    ))
 
     # 2. Merge Rate → Success Rate (skin quality / expression)
-    rate = stats["merge_rate"]
-    if rate >= t["merge_rate"]["high"]:
-        traits.append(
-            "glowing healthy luminous skin, perfectly symmetrical face, "
-            "confident subtle smirk, radiant approved-chad energy"
-        )
-    elif rate <= t["merge_rate"]["low"]:
-        traits.append(
-            "visible facial bruises, dented crooked nose, battle-worn expression, "
-            "dejected sad eyes, rejection energy"
-        )
-    else:
-        traits.append(
-            "neutral composed expression, slightly uneven skin tone, "
-            "hint of cautious optimism"
-        )
+    #    High value = more merges = healthier look
+    traits.append(pick(
+        normalise(stats["merge_rate"], "merge_rate"),
+        MERGE_RATE_LADDER,
+    ))
 
     # 3. Merge Time → Speed (age / sharpness)
-    mtime = stats["median_merge_time_minutes"]
-    if mtime <= t["merge_time_minutes"]["fast"]:
-        traits.append(
-            "sharp crisp facial features, subtle speed-lines at the edges of the body"
-        )
-    elif mtime >= t["merge_time_minutes"]["slow"]:
-        traits.append(
-            "deep forehead wrinkles, heavy sagging skin, exhausted drooping eyes, "
-            "sparse beard stubble, aged-by-the-process appearance"
-        )
-    else:
-        traits.append(
-            "faint crow's feet around the eyes, slightly tired but alert expression"
-        )
+    #    High raw value = slow = aged; invert so high speed → high rung
+    traits.append(pick(
+        1.0 - normalise(stats["median_merge_time_minutes"], "median_merge_time_minutes"),
+        MERGE_SPEED_LADDER,
+    ))
 
     # 4. Zero-Star Repos → Prestige (clothing / lighting)
-    pct_zero = stats["pct_zero_star_repos"]
-    if pct_zero >= t["pct_zero_star"]["high"]:
-        traits.append(
-            "drab worn-out clothing, muted desaturated colors, "
-            "dim flat lighting, indie underground aesthetic"
-        )
-    elif pct_zero <= t["pct_zero_star"]["low"]:
-        traits.append(
-            "golden warm halo glow, immaculate luxury suit, "
-            "dramatic spotlight from above, celebrity developer energy"
-        )
-    else:
-        traits.append(
-            "smart-casual business attire, neutral even lighting, "
-            "mid-tier professional aesthetic"
-        )
+    #    High raw value = more obscure repos = less prestigious; invert
+    traits.append(pick(
+        1.0 - normalise(stats["pct_zero_star_repos"], "pct_zero_star_repos"),
+        PRESTIGE_LADDER,
+    ))
 
     # 5. Issue Linking → Organization (hair / accessories)
-    linking = stats["issue_linking_rate"]
-    if linking >= t["issue_linking"]["high"]:
-        traits.append(
-            "neat wire-frame glasses, precisely combed hair, "
-            "clipboard tucked under arm, organized structured demeanor"
-        )
-    elif linking <= t["issue_linking"]["low"]:
-        traits.append(
-            "wild chaotic hair flying in all directions, unfocused darting eyes, "
-            "faint chaotic scribble marks floating around the head"
-        )
-    else:
-        traits.append(
-            "loosely styled hair, relaxed posture, casually holding a sticky note"
-        )
+    #    High value = more linking = more organised
+    traits.append(pick(
+        normalise(stats["issue_linking_rate"], "issue_linking_rate"),
+        ORGANIZATION_LADDER,
+    ))
 
     # 6. Churn Ratio → Stability (skin texture)
-    churn = stats["churn_ratio"]
-    if churn >= t["churn"]["high"]:
-        traits.append(
-            "patchwork skin with visible stitched seams, Frankenstein-like scars "
-            "across cheeks, constantly-rewriting-himself appearance"
-        )
-    elif churn <= t["churn"]["low"]:
-        traits.append("perfectly smooth marble-like flawless skin texture")
-    else:
-        traits.append(
-            "skin with a few minor blemishes and shallow scuff marks, "
-            "slightly uneven but mostly intact surface"
-        )
+    #    High raw value = more churn = less stable; invert
+    traits.append(pick(
+        1.0 - normalise(stats["churn_ratio"], "churn_ratio"),
+        STABILITY_LADDER,
+    ))
 
     # 7. File Types → Specialty (outfit / accessories)
+    #    Categorical — always produces exactly one description
     specialty = classify_file_specialty(stats["top_file_types"])
     specialty_traits = {
         "frontend": (
@@ -198,17 +222,11 @@ def build_trait_fragments(stats: dict) -> list[str]:
     traits.append(specialty_traits[specialty])
 
     # 8. Developer Interaction → Sociability (background / expression)
-    comments = stats["median_comments"]
-    if comments >= t["comments"]["high"]:
-        traits.append(
-            "highly expressive animated face, admiring silhouetted figures "
-            "visible in the background, small speech bubbles floating nearby"
-        )
-    elif comments <= t["comments"]["low"]:
-        traits.append(
-            "blank stoic stare, completely empty white background, "
-            "lone-wolf isolated atmosphere"
-        )
+    #    High value = more comments = more social
+    traits.append(pick(
+        normalise(stats["median_comments"], "median_comments"),
+        SOCIABILITY_LADDER,
+    ))
 
     return traits
 
