@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visualizing Code Evolution: Human vs Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <p class="header-eyebrow">Data Visualization · MOSAIC-agentic-3m</p>
+      <h1 class="site-title">Visualizing Code Evolution</h1>
+      <p class="site-subtitle">Human vs Autonomous Agent</p>
+      <p class="ethics-note">
+        AI coding agents are quietly reshaping how software gets written — but their behavioral
+        fingerprints differ from ours in ways that aren't always obvious. This visualization
+        makes those differences tangible. It is not a ranking. It is a mirror. Data sourced from
+        the open <a href="https://huggingface.co/datasets/AISE-TUDelft/MOSAIC-agentic-3m" target="_blank" rel="noopener">MOSAIC-agentic-3m</a> dataset (~97k pull requests across 6 authors).
+      </p>
+    </div>
+  </header>
+
+  <main class="stage">
+
+    <!-- ── Left column: character + annotations ── -->
+    <div class="character-col">
+
+      <div class="character-frame" id="character-frame">
+
+        <!-- Character images (stacked, only active one visible) -->
+        <img class="char-img active" id="img-human"       src="images/human.png"       alt="Human Developer"  onerror="this.src='images/placeholder.svg'" />
+        <img class="char-img"        id="img-claude_code" src="images/claude_code.png" alt="Claude Code"       onerror="this.src='images/placeholder.svg'" />
+        <img class="char-img"        id="img-copilot"     src="images/copilot.png"     alt="GitHub Copilot"    onerror="this.src='images/placeholder.svg'" />
+        <img class="char-img"        id="img-jules"       src="images/jules.png"       alt="Google Jules"      onerror="this.src='images/placeholder.svg'" />
+        <img class="char-img"        id="img-devin"       src="images/devin.png"       alt="Devin"             onerror="this.src='images/placeholder.svg'" />
+        <img class="char-img"        id="img-codex"       src="images/codex.png"       alt="Codex"             onerror="this.src='images/placeholder.svg'" />
+
+        <!-- Floating annotation: Scope (forehead) — right side -->
+        <div class="annotation ann-right" id="ann-scope" style="top: 16%; left: 56%;">
+          <div class="ann-dot"></div>
+          <div class="ann-line"></div>
+          <div class="ann-card">
+            <span class="ann-label">Scope</span>
+            <span class="ann-value" id="ann-scope-val">—</span>
+            <span class="ann-hint" id="ann-scope-hint">median PR size</span>
+          </div>
+        </div>
+
+        <!-- Floating annotation: Success Rate (eyes) — left side -->
+        <div class="annotation ann-left" id="ann-success" style="top: 36%; right: 55%;">
+          <div class="ann-dot"></div>
+          <div class="ann-line"></div>
+          <div class="ann-card">
+            <span class="ann-label">Success Rate</span>
+            <span class="ann-value" id="ann-success-val">—</span>
+            <span class="ann-hint" id="ann-success-hint">merge rate</span>
+          </div>
+        </div>
+
+        <!-- Floating annotation: Stability (cheek) — right side -->
+        <div class="annotation ann-right" id="ann-stability" style="top: 57%; left: 56%;">
+          <div class="ann-dot"></div>
+          <div class="ann-line"></div>
+          <div class="ann-card">
+            <span class="ann-label">Stability</span>
+            <span class="ann-value" id="ann-stability-val">—</span>
+            <span class="ann-hint" id="ann-stability-hint">churn ratio</span>
+          </div>
+        </div>
+
+      </div><!-- /character-frame -->
+
+      <div class="character-name" id="character-name">Human</div>
+
+    </div><!-- /character-col -->
+
+    <!-- ── Right column: stats panel ── -->
+    <div class="stats-col">
+      <h2 class="stats-heading">Pull Request Stats</h2>
+      <div class="stats-list" id="stats-list">
+        <!-- Populated by main.js -->
+      </div>
+    </div>
+
+  </main><!-- /stage -->
+
+  <!-- ── Agent selector slider ── -->
+  <section class="selector-section">
+    <div class="selector-inner">
+      <p class="selector-label">Select author</p>
+      <div class="slider-wrap" id="slider-wrap">
+        <div class="slider-track">
+          <div class="slider-fill" id="slider-fill"></div>
+          <div class="slider-stops" id="slider-stops">
+            <!-- 6 stop dots injected by JS -->
+          </div>
+        </div>
+        <input type="range" id="agent-slider" class="range-input" min="0" max="5" step="1" value="0" aria-label="Select agent" />
+        <div class="slider-labels" id="slider-labels">
+          <!-- 6 labels injected by JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>Built with the <a href="https://huggingface.co/datasets/AISE-TUDelft/MOSAIC-agentic-3m" target="_blank" rel="noopener">MOSAIC-agentic-3m</a> dataset · Images generated with DALL·E 3</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9d/6tD8X01Me3yHLB0AoB5Ok/SyvOievwptbE3tNmBQH+j5eSP4+yQi7QnMGJCMkwqVJCktWg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="main.js"></script>
+
+</body>
+</html>

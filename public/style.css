@@ -1,0 +1,541 @@
+/* ─────────────────────────────────────────────
+   TOKENS
+───────────────────────────────────────────── */
+:root {
+  --bg:        #F7F6F3;
+  --surface:   #FFFFFF;
+  --border:    #E8E6E0;
+  --text:      #1C1C1A;
+  --text-muted:#7A7870;
+  --orange:    #E07020;
+  --orange-lt: #FAE8D8;
+  --green:     #5A7D60;
+  --green-lt:  #DDF0E0;
+  --radius:    10px;
+  --shadow:    0 2px 16px rgba(0,0,0,0.07);
+}
+
+/* ─────────────────────────────────────────────
+   RESET & BASE
+───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: var(--orange);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+/* ─────────────────────────────────────────────
+   HEADER
+───────────────────────────────────────────── */
+.site-header {
+  text-align: center;
+  padding: 52px 24px 36px;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.header-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.site-title {
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.site-subtitle {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--orange);
+  margin-top: 6px;
+  margin-bottom: 18px;
+}
+
+.ethics-note {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ─────────────────────────────────────────────
+   MAIN STAGE  (two-column)
+───────────────────────────────────────────── */
+.stage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  max-width: 900px;
+  margin: 48px auto 0;
+  padding: 0 24px;
+  align-items: start;
+}
+
+/* ─────────────────────────────────────────────
+   CHARACTER COLUMN
+───────────────────────────────────────────── */
+.character-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.character-frame {
+  position: relative;
+  width: 220px;
+  /* height set by aspect ratio of image */
+  overflow: visible; /* allow annotations to extend outside */
+}
+
+/* Stack all images on top of each other */
+.char-img {
+  display: block;
+  width: 220px;
+  height: 385px;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  background: var(--border);
+  /* Fallback: show initials-style placeholder via background */
+}
+
+.char-img.active {
+  opacity: 1;
+  position: relative; /* keeps the frame height */
+}
+
+.character-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  text-align: center;
+  margin-top: 6px;
+}
+
+/* ── Annotations ── */
+.annotation {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  z-index: 20;
+  pointer-events: none;
+  /* GSAP will handle opacity transitions */
+}
+
+/* Right: [dot]──[card] extends rightward */
+.ann-right {
+  flex-direction: row;
+  transform: translateY(-50%);
+}
+
+/* Left: same DOM order but row-reverse → [card]──[dot] (dot stays at anchor) */
+.ann-left {
+  flex-direction: row-reverse;
+  transform: translateY(-50%);
+}
+
+.ann-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--orange);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px var(--orange-lt);
+}
+
+.ann-line {
+  width: 24px;
+  height: 1.5px;
+  background: var(--orange);
+  flex-shrink: 0;
+}
+
+.ann-card {
+  background: var(--surface);
+  border: 1.5px solid var(--orange);
+  border-radius: 8px;
+  padding: 7px 10px 6px;
+  min-width: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  box-shadow: 0 3px 14px rgba(224,112,32,0.12);
+}
+
+.ann-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--orange);
+  line-height: 1.2;
+}
+
+.ann-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.ann-hint {
+  font-size: 0.63rem;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
+/* ─────────────────────────────────────────────
+   STATS COLUMN
+───────────────────────────────────────────── */
+.stats-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stats-heading {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Each stat row */
+.stat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.stat-name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.stat-value {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-bar-track {
+  height: 6px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  width: 0%;
+  transition: none; /* GSAP handles it */
+}
+
+.stat-bar-fill.green { background: var(--green); }
+.stat-bar-fill.orange { background: var(--orange); }
+
+/* Tag chips for file types */
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.tag {
+  display: inline-block;
+  background: var(--border);
+  border-radius: 5px;
+  padding: 2px 8px;
+  font-size: 0.73rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  font-family: 'Space Grotesk', monospace;
+}
+
+.tag.primary {
+  background: var(--orange-lt);
+  color: var(--orange);
+}
+
+/* ─────────────────────────────────────────────
+   AGENT SELECTOR
+───────────────────────────────────────────── */
+.selector-section {
+  margin-top: 56px;
+  padding: 32px 24px 48px;
+  border-top: 1px solid var(--border);
+}
+
+.selector-inner {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.selector-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.slider-wrap {
+  position: relative;
+  padding: 0 0 40px; /* room for labels below */
+  user-select: none;
+}
+
+/* Visible track */
+.slider-track {
+  position: relative;
+  height: 4px;
+  background: var(--border);
+  border-radius: 99px;
+  margin: 10px 0;
+  pointer-events: none;
+}
+
+.slider-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: var(--orange);
+  border-radius: 99px;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* Stop dots */
+.slider-stops {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.stop-dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 2px solid var(--bg);
+  transform: translate(-50%, -50%);
+  top: 50%;
+  transition: background 0.25s, transform 0.2s;
+}
+
+.stop-dot.active {
+  background: var(--orange);
+  transform: translate(-50%, -50%) scale(1.25);
+}
+
+.stop-dot.passed {
+  background: var(--orange);
+}
+
+/* Hide the native range input visually, keep it interactive */
+.range-input {
+  position: absolute;
+  top: -6px;
+  left: 0;
+  width: 100%;
+  height: 24px;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  z-index: 10;
+}
+
+/* Labels below slider */
+.slider-labels {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+}
+
+.slider-label-item {
+  position: absolute;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.slider-label-item span {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+  transition: color 0.2s, font-weight 0.2s;
+  display: block;
+  padding: 4px 2px 0;
+}
+
+.slider-label-item.active span {
+  color: var(--orange);
+  font-weight: 700;
+}
+
+.slider-label-item:hover span {
+  color: var(--text);
+}
+
+/* ─────────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────────── */
+.site-footer {
+  text-align: center;
+  padding: 20px 24px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE  (≤ 700px)
+───────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .stage {
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin-top: 32px;
+    padding: 0 16px;
+  }
+
+  .character-col {
+    margin-bottom: 40px;
+  }
+
+  /* On mobile, hide inline annotations; show a flat info strip instead */
+  .annotation {
+    display: none;
+  }
+
+  .mobile-annotations {
+    display: flex !important;
+  }
+
+  .stats-col {
+    padding: 0;
+  }
+
+  .char-img, .char-img.active {
+    width: 180px;
+    height: 315px;
+  }
+
+  .character-frame {
+    width: 180px;
+  }
+
+  .selector-section {
+    margin-top: 40px;
+    padding: 24px 16px 40px;
+  }
+}
+
+/* Mobile annotation strip (hidden on desktop) */
+.mobile-annotations {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 300px;
+  margin-top: 4px;
+}
+
+.mobile-ann-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.mobile-ann-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--orange);
+  flex-shrink: 0;
+}
+
+.mobile-ann-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.mobile-ann-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--orange);
+}
+
+.mobile-ann-val {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
