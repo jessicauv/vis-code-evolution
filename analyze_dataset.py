@@ -12,6 +12,7 @@ import os
 import statistics
 from collections import Counter
 from datetime import datetime
+from typing import Dict, List, Optional
 
 from datasets import load_dataset
 
@@ -37,16 +38,19 @@ COL_DELETIONS      = "deletions"
 COL_MERGED_AT      = "merged_at"
 COL_CREATED_AT     = "created_at"
 COL_CLOSING_ISSUES = "closing_issues_count"
-COL_COMMENTS       = "comments_count"
 COL_FILES          = "files"
-COL_BASE_REPO      = "base_repository"
-REPO_STARS_KEY     = "stargazerCount"   # key inside the base_repository dict
+COL_PR_ID          = "id"
+
+# Column names in the Repositories_{agent} table (used for star count lookup)
+REPO_CONFIG_TEMPLATE = "Repositories_{agent}"
+COL_REPO_PR_ID       = "pr_id"        # joins to COL_PR_ID in PullRequests
+COL_REPO_STARS       = "stargazer_count"
 
 OUTPUT_FILE = "findings.json"
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-def parse_dt(s: str | None) -> datetime | None:
+def parse_dt(s: Optional[str]) -> Optional[datetime]:
     if not s:
         return None
     try:
@@ -55,7 +59,7 @@ def parse_dt(s: str | None) -> datetime | None:
         return None
 
 
-def get_extensions(files_list: list) -> list[str]:
+def get_extensions(files_list: list) -> List[str]:
     """Extract lowercase file extensions from a list of file dicts or path strings."""
     exts = []
     for f in files_list or []:
@@ -69,15 +73,27 @@ def get_extensions(files_list: list) -> list[str]:
     return exts
 
 
-def analyze_agent(agent_name: str) -> dict:
+def build_stars_lookup(agent_name: str) -> Dict[str, int]:
+    """Stream Repositories_{agent} and return {pr_id: stargazer_count}."""
+    config = REPO_CONFIG_TEMPLATE.format(agent=agent_name)
+    print(f"  Loading {config} for star counts …", flush=True)
+    ds = load_dataset(DATASET_NAME, config, split="train", streaming=True)
+    return {
+        row[COL_REPO_PR_ID]: (row.get(COL_REPO_STARS) or 0)
+        for row in ds
+    }
+
+
+def analyze_agent(agent_name: str) -> Dict:
+    stars_lookup = build_stars_lookup(agent_name)
+
     config = f"PullRequests_{agent_name}"
     print(f"  Loading {config} …", flush=True)
     ds = load_dataset(DATASET_NAME, config, split="train", streaming=True)
 
-    pr_sizes: list[float]    = []
-    merge_times: list[float] = []
-    churn_ratios: list[float]= []
-    comments_list: list[float] = []
+    pr_sizes: List[float]     = []
+    merge_times: List[float]  = []
+    churn_ratios: List[float] = []
     merges    = 0
     total     = 0
     zero_star = 0
@@ -100,9 +116,8 @@ def analyze_agent(agent_name: str) -> dict:
                 if minutes >= 0:
                     merge_times.append(minutes)
 
-        repo  = row.get(COL_BASE_REPO) or {}
-        stars = repo.get(REPO_STARS_KEY, 1) if isinstance(repo, dict) else 1
-        if (stars or 0) == 0:
+        stars = stars_lookup.get(row.get(COL_PR_ID), 1)  # default 1 = not zero-star
+        if stars == 0:
             zero_star += 1
 
         if (row.get(COL_CLOSING_ISSUES) or 0) > 0:
@@ -110,8 +125,6 @@ def analyze_agent(agent_name: str) -> dict:
 
         if add > 0:
             churn_ratios.append(dlt / add)
-
-        comments_list.append(row.get(COL_COMMENTS) or 0)
 
         for ext in get_extensions(row.get(COL_FILES) or []):
             ext_counter[ext] += 1
@@ -130,27 +143,70 @@ def analyze_agent(agent_name: str) -> dict:
         "issue_linking_rate":         round(issue_linked / total, 4)              if total          else 0,
         "churn_ratio":                round(statistics.median(churn_ratios), 4)   if churn_ratios   else 0,
         "top_file_types":             top_file_types,
-        "median_comments":            round(statistics.median(comments_list), 2)  if comments_list  else 0,
     }
 
 
+def print_summary(findings: Dict) -> None:
+    STAT_LABELS = [
+        ("total_prs",                 "Total PRs",            "{:>10,.0f}"),
+        ("median_pr_size",            "Median PR Size (lines)","{:>10.1f}"),
+        ("merge_rate",                "Merge Rate",            "{:>10.1%}"),
+        ("median_merge_time_minutes", "Merge Time (min)",      "{:>10.1f}"),
+        ("pct_zero_star_repos",       "Zero-Star Repos %",     "{:>10.1%}"),
+        ("issue_linking_rate",        "Issue Linking Rate",    "{:>10.1%}"),
+        ("churn_ratio",               "Churn Ratio",           "{:>10.4f}"),
+    ]
+
+    agents = list(findings.keys())
+    col_w  = 15
+    label_w = 26
+
+    # Header
+    print("\n" + "=" * (label_w + col_w * len(agents) + 2))
+    print(f"{'':>{label_w}}", end="")
+    for a in agents:
+        print(f"{a:>{col_w}}", end="")
+    print()
+    print("-" * (label_w + col_w * len(agents) + 2))
+
+    # One row per numeric stat
+    for key, label, fmt in STAT_LABELS:
+        print(f"{label:<{label_w}}", end="")
+        for a in agents:
+            val = findings[a].get(key, 0)
+            print(fmt.format(val), end="")
+        print()
+
+    # File types row
+    print(f"{'Top File Types':<{label_w}}", end="")
+    for a in agents:
+        types = " ".join(findings[a].get("top_file_types", [])[:3])
+        print(f"{types:>{col_w}}", end="")
+    print()
+
+    # Footer with per-stat min/max to help calibrate STAT_RANGES
+    print("-" * (label_w + col_w * len(agents) + 2))
+    print(f"{'[range  min → max]':<{label_w}}", end="")
+    print()
+    for key, label, fmt in STAT_LABELS:
+        vals = [findings[a][key] for a in agents]
+        lo, hi = min(vals), max(vals)
+        print(f"  {label:<{label_w - 2}}" + fmt.format(lo) + "  →" + fmt.format(hi))
+    print("=" * (label_w + col_w * len(agents) + 2))
+
+
 def main() -> None:
-    findings: dict = {}
+    findings: Dict = {}
     for agent in AGENTS:
         key = AGENT_KEY_MAP[agent]
         print(f"\n[{agent}]")
         findings[key] = analyze_agent(agent)
-        stats = findings[key]
-        print(
-            f"  total={stats['total_prs']:,}  "
-            f"merge_rate={stats['merge_rate']:.1%}  "
-            f"median_size={stats['median_pr_size']:.0f}  "
-            f"top_types={stats['top_file_types']}"
-        )
 
     with open(OUTPUT_FILE, "w") as f:
         json.dump(findings, f, indent=2)
     print(f"\nSaved → {OUTPUT_FILE}")
+
+    print_summary(findings)
 
 
 if __name__ == "__main__":

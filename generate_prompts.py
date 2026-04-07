@@ -15,15 +15,13 @@ OUTPUT_FILE = "prompts.json"
 
 # Expected real-world (min, max) range for each numeric stat across all agents.
 # Values outside the range are clamped to [0, 1] during normalisation.
-# Adjust these if the dataset produces values outside these bounds.
 STAT_RANGES = {
-    "median_pr_size":            (0,    2000),      # total lines changed
-    "merge_rate":                (0.0,  1.0),
-    "median_merge_time_minutes": (0,    60 * 24 * 14),  # 0 → 2 weeks
-    "pct_zero_star_repos":       (0.0,  1.0),
-    "issue_linking_rate":        (0.0,  1.0),
-    "churn_ratio":               (0.0,  2.0),
-    "median_comments":           (0,    10),
+    "median_pr_size":            (50,   400),
+    "merge_rate":                (0.60, 0.90),
+    "median_merge_time_minutes": (0,    40),
+    "pct_zero_star_repos":       (0.5,  0.8),
+    "issue_linking_rate":        (0.0,  0.55),
+    "churn_ratio":               (0, 0.4),
 }
 
 # File extension → specialty bucket
@@ -109,16 +107,6 @@ STABILITY_LADDER = [
     "perfectly smooth marble-like flawless skin texture",
 ]
 
-# 8. Developer Interaction → Sociability  (higher score = more social)
-SOCIABILITY_LADDER = [
-    "blank stoic stare, completely empty white background, "
-    "lone-wolf isolated atmosphere",
-    "reserved quiet expression, sparse empty background, minimal presence",
-    "mild attentive expression, one or two vague figures in the distance",
-    "warm open expression, a small group of figures visible in the background",
-    "highly expressive animated face, admiring silhouetted figures "
-    "visible in the background, small speech bubbles floating nearby",
-]
 # ──────────────────────────────────────────────────────────────────────────────
 
 BASE_PROMPT = (
@@ -220,13 +208,6 @@ def build_trait_fragments(stats: dict) -> list[str]:
         ),
     }
     traits.append(specialty_traits[specialty])
-
-    # 8. Developer Interaction → Sociability (background / expression)
-    #    High value = more comments = more social
-    traits.append(pick(
-        normalise(stats["median_comments"], "median_comments"),
-        SOCIABILITY_LADDER,
-    ))
 
     return traits
 
