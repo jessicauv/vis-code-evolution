@@ -20,17 +20,9 @@ STAT_RANGES = {
     "merge_rate":                (0.60, 0.90),
     "median_merge_time_minutes": (0,    40),
     "pct_zero_star_repos":       (0.5,  0.8),
-    "issue_linking_rate":        (0.0,  0.55),
     "churn_ratio":               (0, 0.4),
 }
 
-# File extension → specialty bucket
-FILE_TYPE_MAP: dict[str, set[str]] = {
-    "frontend": {".js", ".ts", ".tsx", ".jsx", ".html", ".css", ".scss", ".vue", ".svelte"},
-    "backend":  {".py", ".go", ".java", ".rb", ".rs", ".cs", ".php", ".kt", ".scala"},
-    "devops":   {".yml", ".yaml", ".dockerfile", ".tf", ".toml", ".sh"},
-    "docs":     {".md", ".rst", ".txt", ".adoc"},
-}
 # ──────────────────────────────────────────────────────────────────────────────
 
 # ─── DESCRIPTION LADDERS ──────────────────────────────────────────────────────
@@ -68,34 +60,23 @@ MERGE_SPEED_LADDER = [
     "faint crow's feet around the eyes, slightly tired but alert expression",
     "clean sharp facial features, alert bright eyes, fresh appearance",
     "razor-sharp crisp facial features, bright energetic eyes, "
-    "subtle speed-lines at the edges of the body",
+    "subtle speed-lines radiating from the edges of the face",
 ]
 
 # 4. Zero-Star Repos → Prestige  (higher score = more zero-star = less prestigious)
 #    NOTE: score is inverted — high pct_zero_star → low prestige score
 PRESTIGE_LADDER = [
-    "drab worn-out clothing, muted desaturated colors, "
-    "dim flat lighting, underground indie aesthetic",
-    "plain casual clothes, modest neutral lighting, low-key unassuming look",
-    "smart-casual business attire, neutral even lighting, "
-    "mid-tier professional aesthetic",
-    "polished business suit, warm flattering lighting, quietly distinguished air",
-    "golden warm halo glow, immaculate luxury suit, "
+    "sallow dull complexion, dim flat lighting, "
+    "muted desaturated color grade, underground indie aesthetic",
+    "unremarkable complexion, modest neutral lighting, low-key unassuming expression",
+    "clean neutral complexion, balanced studio lighting, "
+    "composed mid-tier professional expression",
+    "polished refined complexion, warm flattering lighting, quietly distinguished expression",
+    "golden warm halo glow around the face, radiant luminous complexion, "
     "dramatic spotlight from above, celebrity developer energy",
 ]
 
-# 5. Issue Linking → Organization  (higher score = more organised)
-ORGANIZATION_LADDER = [
-    "wild chaotic hair flying in all directions, unfocused darting eyes, "
-    "faint chaotic scribble marks floating around the head",
-    "slightly dishevelled hair, distracted gaze, loosely held crumpled note",
-    "loosely styled hair, relaxed posture, casually holding a sticky note",
-    "neatly styled hair, attentive focused eyes, small notepad in hand",
-    "neat wire-frame glasses, precisely combed hair, "
-    "clipboard tucked under arm, organized structured demeanor",
-]
-
-# 6. Churn Ratio → Stability  (higher score = more churn = less stable)
+# 5. Churn Ratio → Stability  (higher score = more churn = less stable)
 #    NOTE: score is inverted — high churn → low stability score
 STABILITY_LADDER = [
     "patchwork skin with prominent stitched seams, deep Frankenstein-like scars "
@@ -110,10 +91,9 @@ STABILITY_LADDER = [
 # ──────────────────────────────────────────────────────────────────────────────
 
 BASE_PROMPT = (
-    "Hyper-realistic full-body portrait of Handsome Squidward on a pure white background. "
-    "Photorealistic cartoon style. Head-to-toe visible. Slightly uncanny and exaggerated. "
-    "Character is standing upright, facing slightly toward the viewer. "
-    "Professional studio lighting. Ultra-detailed. "
+    "Hyper-realistic close-up portrait of Handsome Squidward's head and face on a pure white background. "
+    "Photorealistic cartoon style. Framed from the neck up, full face visible. Slightly uncanny and exaggerated. "
+    "Facing slightly toward the viewer. Professional studio lighting. Ultra-detailed. "
 )
 
 
@@ -127,17 +107,6 @@ def pick(score: float, ladder: list[str]) -> str:
     """Select the ladder rung that best matches a 0.0–1.0 score."""
     idx = round(score * (len(ladder) - 1))
     return ladder[idx]
-
-
-def classify_file_specialty(top_file_types: list[str]) -> str:
-    counts = {cat: 0 for cat in FILE_TYPE_MAP}
-    for ext in top_file_types:
-        for cat, exts in FILE_TYPE_MAP.items():
-            if ext in exts:
-                counts[cat] += 1
-    if not any(counts.values()):
-        return "backend"
-    return max(counts, key=counts.get)
 
 
 def build_trait_fragments(stats: dict) -> list[str]:
@@ -172,42 +141,12 @@ def build_trait_fragments(stats: dict) -> list[str]:
         PRESTIGE_LADDER,
     ))
 
-    # 5. Issue Linking → Organization (hair / accessories)
-    #    High value = more linking = more organised
-    traits.append(pick(
-        normalise(stats["issue_linking_rate"], "issue_linking_rate"),
-        ORGANIZATION_LADDER,
-    ))
-
-    # 6. Churn Ratio → Stability (skin texture)
+    # 5. Churn Ratio → Stability (skin texture)
     #    High raw value = more churn = less stable; invert
     traits.append(pick(
         1.0 - normalise(stats["churn_ratio"], "churn_ratio"),
         STABILITY_LADDER,
     ))
-
-    # 7. File Types → Specialty (outfit / accessories)
-    #    Categorical — always produces exactly one description
-    specialty = classify_file_specialty(stats["top_file_types"])
-    specialty_traits = {
-        "frontend": (
-            "flashy neon-accented streetwear outfit, stylish swooping hair, "
-            "vibrant colorful palette"
-        ),
-        "backend": (
-            "formal dark suit and tie, serious composed expression, "
-            "conservative muted color palette"
-        ),
-        "devops": (
-            "subtle mechanical cyborg implants on forearms and neck, "
-            "metallic sheen on skin patches, small gear-shaped accessories"
-        ),
-        "docs": (
-            "round scholar glasses, holding a thick open book, "
-            "tweed academic jacket, warm amber library lighting"
-        ),
-    }
-    traits.append(specialty_traits[specialty])
 
     return traits
 
