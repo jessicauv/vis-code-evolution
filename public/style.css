@@ -41,47 +41,40 @@ a:hover { text-decoration: underline; }
    HEADER
 ───────────────────────────────────────────── */
 .site-header {
-  text-align: center;
-  padding: 52px 24px 36px;
+  padding: 24px 60px;
   border-bottom: 1px solid var(--border);
+  text-align: center;
 }
 
 .header-inner {
-  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  max-width: 700px;
   margin: 0 auto;
 }
 
-.header-eyebrow {
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 14px;
-}
-
 .site-title {
-  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  font-size: 1.5rem;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.2;
   letter-spacing: -0.02em;
   color: var(--text);
 }
 
 .site-subtitle {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 400;
   color: var(--orange);
-  margin-top: 6px;
-  margin-bottom: 18px;
+  margin-bottom: 8px;
 }
 
 .ethics-note {
-  font-size: 0.88rem;
-  line-height: 1.65;
+  font-size: 0.78rem;
+  line-height: 1.5;
   color: var(--text-muted);
-  max-width: 520px;
-  margin: 0 auto;
+  margin: 0;
 }
 
 /* ─────────────────────────────────────────────
@@ -89,11 +82,11 @@ a:hover { text-decoration: underline; }
 ───────────────────────────────────────────── */
 .stage {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
-  max-width: 900px;
-  margin: 48px auto 0;
-  padding: 0 24px;
+  grid-template-columns: auto 1fr;
+  gap: 72px;
+  max-width: 1400px;
+  margin: 24px auto 0;
+  padding: 0 60px;
   align-items: start;
 }
 
@@ -109,7 +102,7 @@ a:hover { text-decoration: underline; }
 
 .character-frame {
   position: relative;
-  width: 220px;
+  width: 520px;
   /* height set by aspect ratio of image */
   overflow: visible; /* allow annotations to extend outside */
 }
@@ -117,16 +110,14 @@ a:hover { text-decoration: underline; }
 /* Stack all images on top of each other */
 .char-img {
   display: block;
-  width: 220px;
-  height: 385px;
+  width: 520px;
+  height: 440px;
   object-fit: cover;
-  border-radius: 14px;
-  box-shadow: var(--shadow);
+  border-radius: 0;
   position: absolute;
   top: 0;
   left: 0;
   opacity: 0;
-  background: var(--border);
   /* Fallback: show initials-style placeholder via background */
 }
 
@@ -237,7 +228,7 @@ a:hover { text-decoration: underline; }
 .stats-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 20px;
 }
 
 /* Each stat row */
@@ -254,20 +245,20 @@ a:hover { text-decoration: underline; }
 }
 
 .stat-name {
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: var(--text);
 }
 
 .stat-value {
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--text);
   font-variant-numeric: tabular-nums;
 }
 
 .stat-bar-track {
-  height: 6px;
+  height: 8px;
   background: var(--border);
   border-radius: 99px;
   overflow: hidden;
@@ -316,7 +307,7 @@ a:hover { text-decoration: underline; }
 }
 
 .selector-inner {
-  max-width: 700px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -452,16 +443,21 @@ a:hover { text-decoration: underline; }
 /* ─────────────────────────────────────────────
    RESPONSIVE  (≤ 700px)
 ───────────────────────────────────────────── */
-@media (max-width: 700px) {
+@media (max-width: 900px) {
+  .site-header {
+    padding: 14px 24px;
+  }
+
   .stage {
     grid-template-columns: 1fr;
     gap: 0;
     margin-top: 32px;
-    padding: 0 16px;
+    padding: 0 24px;
   }
 
   .character-col {
     margin-bottom: 40px;
+    align-items: center;
   }
 
   /* On mobile, hide inline annotations; show a flat info strip instead */
@@ -478,12 +474,12 @@ a:hover { text-decoration: underline; }
   }
 
   .char-img, .char-img.active {
-    width: 180px;
-    height: 315px;
+    width: 280px;
+    height: 237px;
   }
 
   .character-frame {
-    width: 180px;
+    width: 280px;
   }
 
   .selector-section {
