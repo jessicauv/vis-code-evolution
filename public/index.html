@@ -15,8 +15,9 @@
     <div class="header-inner">
       <h1 class="site-title">Visualizing Code Evolution</h1>
       <p class="site-subtitle">Human vs Autonomous Agent</p>
+      <div class="header-emblem">◆</div>
       <p class="ethics-note">
-        A slighly uncanny visualization of human vs agent code contributions to open up conversations 
+        An unusual visualization of human vs agent code contributions to open up conversations 
         on accountability, agency, and the emerging social contract between humans and the systems that 
         increasingly co-author our digital world.
       </p>
@@ -27,6 +28,8 @@
 
     <!-- ── Left column: character + annotations ── -->
     <div class="character-col">
+
+      <div class="character-name" id="character-name">Human</div>
 
       <div class="character-frame" id="character-frame">
 
@@ -73,12 +76,12 @@
 
       </div><!-- /character-frame -->
 
-      <div class="character-name" id="character-name">Human</div>
-
     </div><!-- /character-col -->
 
     <!-- ── Right column: stats panel ── -->
     <div class="stats-col">
+      <span class="corner-dot corner-tr"></span>
+      <span class="corner-dot corner-bl"></span>
       <h2 class="stats-heading">Pull Request Stats</h2>
       <div class="stats-list" id="stats-list">
         <!-- Populated by main.js -->

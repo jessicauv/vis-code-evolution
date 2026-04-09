@@ -27,28 +27,28 @@ const STATS = [
     key: 'merge_rate',
     label: 'Merge Rate',
     fmt: v => `${(v * 100).toFixed(1)}%`,
-    barColor: 'green',
+    barColor: 'amber',
     higherIsBetter: true,
   },
   {
     key: 'median_merge_time_minutes',
     label: 'Median Merge Time',
     fmt: v => v < 60 ? `${v.toFixed(1)} min` : `${(v/60).toFixed(1)} hr`,
-    barColor: 'orange',
+    barColor: 'yellow',
     higherIsBetter: false,
   },
   {
     key: 'pct_zero_star_repos',
     label: 'Zero-Star Repos',
     fmt: v => `${(v * 100).toFixed(1)}%`,
-    barColor: 'orange',
+    barColor: 'teal',
     higherIsBetter: false,
   },
   {
     key: 'issue_linking_rate',
     label: 'Issue Linking Rate',
     fmt: v => `${(v * 100).toFixed(1)}%`,
-    barColor: 'green',
+    barColor: 'teal',
     higherIsBetter: true,
   },
   {
@@ -98,6 +98,18 @@ const FALLBACK_DATA = {
   jules:       { total_prs:18468, median_pr_size:112,   merge_rate:0.7728, median_merge_time_minutes:1.63,  pct_zero_star_repos:0.7566, issue_linking_rate:0.1183, churn_ratio:0.2910, top_file_types:['.py','.js','.md','.ts','.tsx']  },
   devin:       { total_prs:14045, median_pr_size:165,   merge_rate:0.6198, median_merge_time_minutes:20.92, pct_zero_star_repos:0.6411, issue_linking_rate:0.0196, churn_ratio:0.1057, top_file_types:['.ts','.tsx','.py','.md','.json'] },
   codex:       { total_prs:20835, median_pr_size:53,    merge_rate:0.8755, median_merge_time_minutes:0.47,  pct_zero_star_repos:0.7537, issue_linking_rate:0.0019, churn_ratio:0.2250, top_file_types:['.py','.js','.md','.tsx','.ts']  },
+};
+
+/* ── File type tag color map ── */
+const TAG_COLORS = {
+  '.js':   'tag-js',
+  '.jsx':  'tag-jsx',
+  '.ts':   'tag-ts',
+  '.tsx':  'tag-tsx',
+  '.py':   'tag-py',
+  '.md':   'tag-md',
+  '.java': 'tag-java',
+  '.json': 'tag-json',
 };
 
 /* ── State ── */
@@ -332,8 +344,8 @@ function switchAgent(newIdx, animate) {
       const tagsEl = document.getElementById('tags-' + s.key);
       if (!tagsEl) return;
       const types = data[s.key] || [];
-      tagsEl.innerHTML = types.map((t, i) =>
-        `<span class="tag ${i === 0 ? 'primary' : ''}">${t}</span>`
+      tagsEl.innerHTML = types.map(t =>
+        `<span class="tag ${TAG_COLORS[t] || ''}">${t}</span>`
       ).join('');
       return;
     }
