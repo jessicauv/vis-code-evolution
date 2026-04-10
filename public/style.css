@@ -240,6 +240,7 @@ a:hover { text-decoration: underline; }
   border: 1.5px solid #7a5428;
   border-radius: 8px;
   padding: 18px 22px;
+  min-width: 320px;
   position: relative;
   box-shadow:
     0 0 0 3px #1e1408,
@@ -324,6 +325,18 @@ a:hover { text-decoration: underline; }
 .stat-bar-fill.orange {
   background: var(--orange);
   box-shadow: 0 0 8px rgba(232,120,32,0.45);
+}
+.stat-bar-fill.amber {
+  background: var(--gold);
+  box-shadow: 0 0 8px rgba(240,176,48,0.45);
+}
+.stat-bar-fill.yellow {
+  background: #c8e020;
+  box-shadow: 0 0 8px rgba(200,224,32,0.45);
+}
+.stat-bar-fill.teal {
+  background: var(--teal);
+  box-shadow: 0 0 8px rgba(0,212,168,0.45);
 }
 
 /* Tag chips for file types */
@@ -540,6 +553,7 @@ a:hover { text-decoration: underline; }
 
   .stats-col {
     padding: 20px 16px;
+    min-width: 0;
   }
 
   .char-img, .char-img.active {

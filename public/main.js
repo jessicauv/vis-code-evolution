@@ -21,7 +21,7 @@ const STATS = [
     label: 'Median PR Size',
     fmt: v => `${Math.round(v)} lines`,
     barColor: 'orange',
-    higherIsBetter: false,
+    higherIsBetter: true,
   },
   {
     key: 'merge_rate',
@@ -29,13 +29,14 @@ const STATS = [
     fmt: v => `${(v * 100).toFixed(1)}%`,
     barColor: 'amber',
     higherIsBetter: true,
+    absoluteBar: true,
   },
   {
     key: 'median_merge_time_minutes',
     label: 'Median Merge Time',
     fmt: v => v < 60 ? `${v.toFixed(1)} min` : `${(v/60).toFixed(1)} hr`,
     barColor: 'yellow',
-    higherIsBetter: false,
+    higherIsBetter: true,
   },
   {
     key: 'issue_linking_rate',
@@ -43,6 +44,7 @@ const STATS = [
     fmt: v => `${(v * 100).toFixed(1)}%`,
     barColor: 'teal',
     higherIsBetter: true,
+    absoluteBar: true,
   },
   {
     key: 'survival_rate',
@@ -50,6 +52,7 @@ const STATS = [
     fmt: v => `${(v * 100).toFixed(1)}%`,
     barColor: 'orange',
     higherIsBetter: true,
+    absoluteBar: true,
   },
   {
     key: 'top_file_types',
@@ -152,6 +155,7 @@ function normalize(value, key) {
 
 /* ── Bar pct (always 0→1 where 1 = best for that stat) ── */
 function barPct(value, stat) {
+  if (stat.absoluteBar) return Math.max(0.04, value);
   const raw = normalize(value, stat.key);
   // Add a small floor so even the worst agent has a visible bar
   const pct = stat.higherIsBetter ? raw : 1 - raw;
