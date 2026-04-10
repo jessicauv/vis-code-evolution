@@ -48,14 +48,6 @@ const STATS = [
     absoluteBar: true,
   },
   {
-    key: 'survival_rate',
-    label: 'Survival Rate',
-    fmt: v => `${(v * 100).toFixed(1)}%`,
-    barColor: 'orange',
-    higherIsBetter: true,
-    absoluteBar: true,
-  },
-  {
     key: 'top_file_types',
     label: 'Top File Types',
     type: 'tags',
@@ -78,23 +70,16 @@ const ANNOTATIONS = [
     fmt:     v => `${(v * 100).toFixed(1)}%`,
     context: v => v >= 0.80 ? 'high approval, confident output' : v >= 0.70 ? 'solid success rate' : 'frequent rejections',
   },
-  {
-    id:      'stability',
-    stat:    'survival_rate',
-    hint:    'survival rate',
-    fmt:     v => `${(v * 100).toFixed(1)}%`,
-    context: v => v >= 0.70 ? 'stable, low-rework code' : v >= 0.50 ? 'moderate rework rate' : 'high rewrite rate, unstable code',
-  },
 ];
 
 /* ── Fallback data (used if findings.json fails to load) ── */
 const FALLBACK_DATA = {
-  human:       { total_prs:20910, median_pr_size:60,    merge_rate:0.7512, median_merge_time_minutes:25.66, issue_linking_rate:0.0858, survival_rate:0.7800, top_file_types:['.ts','.py','.md','.tsx','.java'] },
-  claude_code: { total_prs:19148, median_pr_size:376,   merge_rate:0.8643, median_merge_time_minutes:10.58, issue_linking_rate:0.2030, survival_rate:0.6200, top_file_types:['.ts','.md','.py','.tsx','.json'] },
-  copilot:     { total_prs:18563, median_pr_size:212,   merge_rate:0.6222, median_merge_time_minutes:37.34, issue_linking_rate:0.5207, survival_rate:0.5800, top_file_types:['.md','.ts','.py','.js','.json'] },
-  jules:       { total_prs:18468, median_pr_size:112,   merge_rate:0.7728, median_merge_time_minutes:1.63,  issue_linking_rate:0.1183, survival_rate:0.5500, top_file_types:['.py','.js','.md','.ts','.tsx']  },
-  devin:       { total_prs:14045, median_pr_size:165,   merge_rate:0.6198, median_merge_time_minutes:20.92, issue_linking_rate:0.0196, survival_rate:0.6000, top_file_types:['.ts','.tsx','.py','.md','.json'] },
-  codex:       { total_prs:20835, median_pr_size:53,    merge_rate:0.8755, median_merge_time_minutes:0.47,  issue_linking_rate:0.0019, survival_rate:0.5300, top_file_types:['.py','.js','.md','.tsx','.ts']  },
+  human:       { total_prs:20910, median_pr_size:60,    merge_rate:0.7512, median_merge_time_minutes:25.66, issue_linking_rate:0.0858, top_file_types:['.ts','.py','.md','.tsx','.java'] },
+  claude_code: { total_prs:19148, median_pr_size:376,   merge_rate:0.8643, median_merge_time_minutes:10.58, issue_linking_rate:0.2030, top_file_types:['.ts','.md','.py','.tsx','.json'] },
+  copilot:     { total_prs:18563, median_pr_size:212,   merge_rate:0.6222, median_merge_time_minutes:37.34, issue_linking_rate:0.5207, top_file_types:['.md','.ts','.py','.js','.json'] },
+  jules:       { total_prs:18468, median_pr_size:112,   merge_rate:0.7728, median_merge_time_minutes:1.63,  issue_linking_rate:0.1183, top_file_types:['.py','.js','.md','.ts','.tsx']  },
+  devin:       { total_prs:14045, median_pr_size:165,   merge_rate:0.6198, median_merge_time_minutes:20.92, issue_linking_rate:0.0196, top_file_types:['.ts','.tsx','.py','.md','.json'] },
+  codex:       { total_prs:20835, median_pr_size:53,    merge_rate:0.8755, median_merge_time_minutes:0.47,  issue_linking_rate:0.0019, top_file_types:['.py','.js','.md','.tsx','.ts']  },
 };
 
 /* ── File type tag color map ── */

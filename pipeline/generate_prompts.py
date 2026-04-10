@@ -18,7 +18,7 @@ OUTPUT_FILE = "prompts.json"
 STAT_RANGES = {
     "median_pr_size":            (50,   400),
     "median_merge_time_minutes": (0,    40),
-    "survival_rate":             (0.3, 0.9),
+    "merge_rate":                (0.60, 0.90),
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -37,7 +37,7 @@ PR_SIZE_LADDER = [
     "giga-brain overengineered head proportions",
 ]
 
-# 2. Merge Time → Speed  
+# 2. Merge Time → Speed
 # (aerodynamic/slicked hair for fast, wild/unkempt for slow)
 # NOTE: score is inverted before use — slow merge time → high raw value → low speed score
 MERGE_SPEED_LADDER = [
@@ -48,17 +48,17 @@ MERGE_SPEED_LADDER = [
     "aerodynamically slicked-back hair, perfectly streamlined as if caught in a wind tunnel, every strand in place",
 ]
 
-# 3. Survival Rate → Stability  (higher score = more stable = smoother skin)
-#    High survival → high rung (no inversion)
-STABILITY_LADDER = [
-    "patchwork skin with prominent stitched seams, deep Frankenstein-like scars across cheeks",
-    "several shallow scars and visible skin patches, noticeably uneven texture",
-    "skin with a few minor blemishes and shallow scuff marks, "
-    "slightly uneven but mostly intact surface",
-    "smooth even skin with only the faintest of marks",
-    "perfectly smooth marble-like flawless skin texture",
+# 3. Merge Rate → Success Rate  (higher score = healthier, more confident)
+MERGE_RATE_LADDER = [
+    "visible facial bruises, dented crooked nose, battle-worn expression, "
+    "dejected sad eyes, rejection energy",
+    "faint scuff marks on skin, slightly downturned mouth, weary look",
+    "neutral composed expression, slightly uneven skin tone, "
+    "hint of cautious optimism",
+    "clear healthy skin, symmetrical features, calm confident expression",
+    "glowing luminous skin, perfectly symmetrical face, "
+    "confident smirk, radiant approved-chad energy",
 ]
-
 # ──────────────────────────────────────────────────────────────────────────────
 
 BASE_PROMPT = (
@@ -91,18 +91,18 @@ def build_trait_fragments(stats: dict) -> list[str]:
         PR_SIZE_LADDER,
     ))
 
-    # 2. Merge Time → Speed (age / sharpness)
-    #    High raw value = slow = aged; invert so high speed → high rung
+    # 2. Merge Time → Speed (hair style)
+    #    High raw value = slow = disheveled; invert so high speed → high rung
     traits.append(pick(
         1.0 - normalise(stats["median_merge_time_minutes"], "median_merge_time_minutes"),
         MERGE_SPEED_LADDER,
     ))
 
-    # 3. Survival Rate → Stability (skin texture)
-    #    High value = more stable = higher rung (no inversion needed)
+    # 3. Merge Rate → Approval (eye expression / confidence)
+    #    High value = more merges = higher rung (no inversion needed)
     traits.append(pick(
-        normalise(stats["survival_rate"], "survival_rate"),
-        STABILITY_LADDER,
+        normalise(stats["merge_rate"], "merge_rate"),
+        MERGE_RATE_LADDER,
     ))
 
     return traits
