@@ -629,3 +629,61 @@ a:hover { text-decoration: underline; }
   font-weight: 700;
   color: var(--text);
 }
+
+/* ─────────────────────────────────────────────
+   CONCLUSION PANEL
+───────────────────────────────────────────── */
+#conclusion-panel {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 60px;
+}
+
+.conclusion-inner {
+  /* Matches .stats-col box style */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: rgba(10,7,3,0.88);
+  border: 1.5px solid #7a5428;
+  border-radius: 8px;
+  padding: 28px 32px;
+  max-width: 640px;
+  width: 100%;
+  position: relative;
+  box-shadow:
+    0 0 0 3px #1e1408,
+    0 0 50px rgba(180,110,20,0.12),
+    inset 0 0 60px rgba(0,0,0,0.5);
+}
+
+.conclusion-inner::before,
+.conclusion-inner::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--orange);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--orange), 0 0 24px rgba(232,120,32,0.5);
+  z-index: 1;
+}
+.conclusion-inner::before { top: -5px;    left:  -5px; }
+.conclusion-inner::after  { bottom: -5px; right: -5px; }
+
+.conclusion-body {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--text-muted);
+}
+
+@media (max-width: 900px) {
+  #conclusion-panel {
+    padding: 24px 16px 40px;
+  }
+
+  .conclusion-body {
+    font-size: 0.88rem;
+  }
+}

@@ -90,6 +90,25 @@
 
   </main><!-- /stage -->
 
+  <!-- ── Conclusion panel (shown when slider reaches "End") ── -->
+  <div id="conclusion-panel" style="display:none;">
+    <div class="conclusion-inner">
+      <span class="corner-dot corner-tr"></span>
+      <span class="corner-dot corner-bl"></span>
+      <h2 class="stats-heading">The Bottom Line</h2>
+      <p class="conclusion-body">
+        Agent-generated code is larger, faster to produce, and often quicker to replace.
+        But as the cost of writing code drops, the cost of verifying it rises.
+      </p>
+      <p class="conclusion-body">
+        Longer merge times and shifting review patterns raise a critical question:
+        are we evolving our processes or quietly lowering our standards? As agents become
+        active contributors, systems like code review, issue tracking, and validation must
+        adapt. Our focus should shift from writing code to how we evaluate, trust, and sustain code.
+      </p>
+    </div>
+  </div>
+
   <!-- ── Agent selector slider ── -->
   <section class="selector-section">
     <div class="selector-inner">
@@ -101,7 +120,7 @@
             <!-- 6 stop dots injected by JS -->
           </div>
         </div>
-        <input type="range" id="agent-slider" class="range-input" min="0" max="5" step="1" value="0" aria-label="Select agent" />
+        <input type="range" id="agent-slider" class="range-input" min="0" max="6" step="1" value="0" aria-label="Select agent" />
         <div class="slider-labels" id="slider-labels">
           <!-- 6 labels injected by JS -->
         </div>

@@ -12,6 +12,7 @@ const AGENTS = [
   { key: 'jules',       label: 'Google Jules'   },
   { key: 'devin',       label: 'Devin'          },
   { key: 'codex',       label: 'Codex'          },
+  { key: 'end',         label: 'End'            },
 ];
 
 /* ── Stat definitions ── */
@@ -266,38 +267,100 @@ function capitalise(s) {
 }
 
 /* ────────────────────────────────────────────
+   SLIDER VISUALS HELPER
+──────────────────────────────────────────── */
+function updateSliderVisuals(newIdx) {
+  const pct = (newIdx / (AGENTS.length - 1)) * 100;
+  document.getElementById('slider-fill').style.width = pct + '%';
+
+  document.querySelectorAll('.stop-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === newIdx);
+    dot.classList.toggle('passed', i < newIdx);
+  });
+
+  document.querySelectorAll('.slider-label-item').forEach((lbl, i) => {
+    lbl.classList.toggle('active', i === newIdx);
+  });
+}
+
+/* ────────────────────────────────────────────
    SWITCH AGENT  (the main update function)
 ──────────────────────────────────────────── */
 function switchAgent(newIdx, animate) {
   const prevIdx = currentIdx;
   currentIdx = newIdx;
 
-  const agent = AGENTS[newIdx];
+  const agent   = AGENTS[newIdx];
+  const isEnd   = agent.key === 'end';
+  const wasEnd  = AGENTS[prevIdx].key === 'end';
+
+  const stage          = document.querySelector('.stage');
+  const conclusionPanel = document.getElementById('conclusion-panel');
+
+  /* ── Handle End slide ── */
+  if (isEnd) {
+    if (animate && typeof gsap !== 'undefined') {
+      gsap.to(stage, { opacity: 0, duration: 0.3, ease: 'power2.out', onComplete: () => {
+        stage.style.display = 'none';
+        conclusionPanel.style.display = 'flex';
+        gsap.fromTo(conclusionPanel, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power2.in' });
+      }});
+    } else {
+      stage.style.display = 'none';
+      conclusionPanel.style.display = 'flex';
+    }
+    updateSliderVisuals(newIdx);
+    return;
+  }
+
+  /* ── Restore normal view when coming from End ── */
+  if (wasEnd) {
+    if (animate && typeof gsap !== 'undefined') {
+      gsap.to(conclusionPanel, { opacity: 0, duration: 0.3, ease: 'power2.out', onComplete: () => {
+        conclusionPanel.style.display = 'none';
+        stage.style.display = '';
+        gsap.fromTo(stage, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power2.in' });
+      }});
+    } else {
+      conclusionPanel.style.display = 'none';
+      stage.style.display = '';
+    }
+  }
+
   const data  = findings[agent.key] || {};
 
   /* ── 1. Crossfade images ── */
-  const prevImg = document.getElementById('img-' + AGENTS[prevIdx].key);
+  const prevKey = wasEnd ? agent.key : AGENTS[prevIdx].key;
+  const prevImg = document.getElementById('img-' + prevKey);
   const nextImg = document.getElementById('img-' + agent.key);
 
   if (prevIdx !== newIdx || !animate) {
     if (animate && typeof gsap !== 'undefined') {
-      // Fade out previous
-      gsap.to(prevImg, { opacity: 0, duration: 0.35, ease: 'power2.out', onComplete: () => {
-        prevImg.classList.remove('active');
-        prevImg.style.position = 'absolute';
-      }});
+      if (prevImg && prevImg !== nextImg) {
+        // Fade out previous
+        gsap.to(prevImg, { opacity: 0, duration: 0.35, ease: 'power2.out', onComplete: () => {
+          prevImg.classList.remove('active');
+          prevImg.style.position = 'absolute';
+        }});
+      }
       // Fade in next
-      nextImg.classList.add('active');
-      nextImg.style.position = 'relative';
-      gsap.fromTo(nextImg, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power2.in' });
+      if (nextImg) {
+        nextImg.classList.add('active');
+        nextImg.style.position = 'relative';
+        gsap.fromTo(nextImg, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power2.in' });
+      }
     } else {
       // Instant swap (first load or no GSAP)
-      prevImg.classList.remove('active');
-      prevImg.style.position = 'absolute';
-      prevImg.style.opacity  = '0';
-      nextImg.classList.add('active');
-      nextImg.style.position = 'relative';
-      nextImg.style.opacity  = '1';
+      if (prevImg && prevImg !== nextImg) {
+        prevImg.classList.remove('active');
+        prevImg.style.position = 'absolute';
+        prevImg.style.opacity  = '0';
+      }
+      if (nextImg) {
+        nextImg.classList.add('active');
+        nextImg.style.position = 'relative';
+        nextImg.style.opacity  = '1';
+      }
     }
   }
 
@@ -373,17 +436,7 @@ function switchAgent(newIdx, animate) {
   });
 
   /* ── 5. Update slider fill + stop dots + labels ── */
-  const pct = (newIdx / (AGENTS.length - 1)) * 100;
-  document.getElementById('slider-fill').style.width = pct + '%';
-
-  document.querySelectorAll('.stop-dot').forEach((dot, i) => {
-    dot.classList.toggle('active', i === newIdx);
-    dot.classList.toggle('passed', i < newIdx);
-  });
-
-  document.querySelectorAll('.slider-label-item').forEach((lbl, i) => {
-    lbl.classList.toggle('active', i === newIdx);
-  });
+  updateSliderVisuals(newIdx);
 }
 
 /* ── Go ── */
