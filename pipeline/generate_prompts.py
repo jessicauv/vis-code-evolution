@@ -17,7 +17,6 @@ OUTPUT_FILE = "prompts.json"
 # Values outside the range are clamped to [0, 1] during normalisation.
 STAT_RANGES = {
     "median_pr_size":            (50,   400),
-    "merge_rate":                (0.60, 0.90),
     "median_merge_time_minutes": (0,    40),
     "survival_rate":             (0.3, 0.9),
 }
@@ -31,38 +30,25 @@ STAT_RANGES = {
 # 1. PR Size → Scope  (higher score = bigger head)
 PR_SIZE_LADDER = [
     "compact refined facial features, perfectly proportioned head",
-    "slightly wider-than-normal forehead, gently broadened jaw",
+    "slightly wider-than-normal forehead",
     "noticeably prominent forehead, moderately exaggerated head proportions",
-    "large bulging forehead, heavy exaggerated jaw, oversized head",
-    "massive oversized bulging forehead, enormous exaggerated jaw, "
+    "large bulging forehead, oversized head",
+    "massive oversized bulging forehead, "
     "giga-brain overengineered head proportions",
 ]
 
-# 2. Merge Rate → Success Rate  (higher score = healthier, more confident)
-MERGE_RATE_LADDER = [
-    "visible facial bruises, dented crooked nose, battle-worn expression, "
-    "dejected sad eyes, rejection energy",
-    "faint scuff marks on skin, slightly downturned mouth, weary look",
-    "neutral composed expression, slightly uneven skin tone, "
-    "hint of cautious optimism",
-    "clear healthy skin, symmetrical features, calm confident expression",
-    "glowing luminous skin, perfectly symmetrical face, "
-    "confident smirk, radiant approved-chad energy",
-]
-
-# 3. Merge Time → Speed  (higher score = faster = sharper; lower score = slower = more aged)
-#    NOTE: score is inverted before use — slow merge time → high raw value → low speed score
+# 2. Merge Time → Speed  
+# (aerodynamic/slicked hair for fast, wild/unkempt for slow)
+# NOTE: score is inverted before use — slow merge time → high raw value → low speed score
 MERGE_SPEED_LADDER = [
-    "deep forehead wrinkles, heavy sagging skin, exhausted drooping eyes, "
-    "thick beard stubble, aged-by-the-process appearance",
-    "noticeable crow's feet, slightly sunken eyes, faint beard shadow, tired look",
-    "faint crow's feet around the eyes, slightly tired but alert expression",
-    "clean sharp facial features, alert bright eyes, fresh appearance",
-    "razor-sharp crisp facial features, bright energetic eyes, "
-    "subtle speed-lines radiating from the edges of the face",
+    "wild tangled overgrown hair, chaotic strands jutting in all directions, completely untamed",
+    "loosely disheveled hair, several strands out of place, unkempt and unmanaged",
+    "neatly combed hair, tidy and well-maintained, no particular style",
+    "sharply side-parted hair, cleanly styled with precise lines, polished appearance",
+    "aerodynamically slicked-back hair, perfectly streamlined as if caught in a wind tunnel, every strand in place",
 ]
 
-# 4. Survival Rate → Stability  (higher score = more stable = smoother skin)
+# 3. Survival Rate → Stability  (higher score = more stable = smoother skin)
 #    High survival → high rung (no inversion)
 STABILITY_LADDER = [
     "patchwork skin with prominent stitched seams, deep Frankenstein-like scars "
@@ -106,21 +92,14 @@ def build_trait_fragments(stats: dict) -> list[str]:
         PR_SIZE_LADDER,
     ))
 
-    # 2. Merge Rate → Success Rate (skin quality / expression)
-    #    High value = more merges = healthier look
-    traits.append(pick(
-        normalise(stats["merge_rate"], "merge_rate"),
-        MERGE_RATE_LADDER,
-    ))
-
-    # 3. Merge Time → Speed (age / sharpness)
+    # 2. Merge Time → Speed (age / sharpness)
     #    High raw value = slow = aged; invert so high speed → high rung
     traits.append(pick(
         1.0 - normalise(stats["median_merge_time_minutes"], "median_merge_time_minutes"),
         MERGE_SPEED_LADDER,
     ))
 
-    # 4. Survival Rate → Stability (skin texture)
+    # 3. Survival Rate → Stability (skin texture)
     #    High value = more stable = higher rung (no inversion needed)
     traits.append(pick(
         normalise(stats["survival_rate"], "survival_rate"),
