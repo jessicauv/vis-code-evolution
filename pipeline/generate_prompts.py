@@ -19,7 +19,7 @@ STAT_RANGES = {
     "median_pr_size":            (50,   400),
     "merge_rate":                (0.60, 0.90),
     "median_merge_time_minutes": (0,    40),
-    "churn_ratio":               (0, 0.4),
+    "survival_rate":             (0.3, 0.9),
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -62,8 +62,8 @@ MERGE_SPEED_LADDER = [
     "subtle speed-lines radiating from the edges of the face",
 ]
 
-# 4. Churn Ratio → Stability  (higher score = more churn = less stable)
-#    NOTE: score is inverted — high churn → low stability score
+# 4. Survival Rate → Stability  (higher score = more stable = smoother skin)
+#    High survival → high rung (no inversion)
 STABILITY_LADDER = [
     "patchwork skin with prominent stitched seams, deep Frankenstein-like scars "
     "across cheeks, constantly-rewriting-himself appearance",
@@ -120,10 +120,10 @@ def build_trait_fragments(stats: dict) -> list[str]:
         MERGE_SPEED_LADDER,
     ))
 
-    # 4. Churn Ratio → Stability (skin texture)
-    #    High raw value = more churn = less stable; invert
+    # 4. Survival Rate → Stability (skin texture)
+    #    High value = more stable = higher rung (no inversion needed)
     traits.append(pick(
-        1.0 - normalise(stats["churn_ratio"], "churn_ratio"),
+        normalise(stats["survival_rate"], "survival_rate"),
         STABILITY_LADDER,
     ))
 
