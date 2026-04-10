@@ -51,8 +51,7 @@ MERGE_SPEED_LADDER = [
 # 3. Survival Rate → Stability  (higher score = more stable = smoother skin)
 #    High survival → high rung (no inversion)
 STABILITY_LADDER = [
-    "patchwork skin with prominent stitched seams, deep Frankenstein-like scars "
-    "across cheeks, constantly-rewriting-himself appearance",
+    "patchwork skin with prominent stitched seams, deep Frankenstein-like scars across cheeks",
     "several shallow scars and visible skin patches, noticeably uneven texture",
     "skin with a few minor blemishes and shallow scuff marks, "
     "slightly uneven but mostly intact surface",
