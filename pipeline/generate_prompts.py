@@ -19,7 +19,6 @@ STAT_RANGES = {
     "median_pr_size":            (50,   400),
     "merge_rate":                (0.60, 0.90),
     "median_merge_time_minutes": (0,    40),
-    "pct_zero_star_repos":       (0.5,  0.8),
     "churn_ratio":               (0, 0.4),
 }
 
@@ -63,20 +62,7 @@ MERGE_SPEED_LADDER = [
     "subtle speed-lines radiating from the edges of the face",
 ]
 
-# 4. Zero-Star Repos → Prestige  (higher score = more zero-star = less prestigious)
-#    NOTE: score is inverted — high pct_zero_star → low prestige score
-PRESTIGE_LADDER = [
-    "sallow dull complexion, dim flat lighting, "
-    "muted desaturated color grade, underground indie aesthetic",
-    "unremarkable complexion, modest neutral lighting, low-key unassuming expression",
-    "clean neutral complexion, balanced studio lighting, "
-    "composed mid-tier professional expression",
-    "polished refined complexion, warm flattering lighting, quietly distinguished expression",
-    "golden warm halo glow around the face, radiant luminous complexion, "
-    "dramatic spotlight from above, celebrity developer energy",
-]
-
-# 5. Churn Ratio → Stability  (higher score = more churn = less stable)
+# 4. Churn Ratio → Stability  (higher score = more churn = less stable)
 #    NOTE: score is inverted — high churn → low stability score
 STABILITY_LADDER = [
     "patchwork skin with prominent stitched seams, deep Frankenstein-like scars "
@@ -134,14 +120,7 @@ def build_trait_fragments(stats: dict) -> list[str]:
         MERGE_SPEED_LADDER,
     ))
 
-    # 4. Zero-Star Repos → Prestige (clothing / lighting)
-    #    High raw value = more obscure repos = less prestigious; invert
-    traits.append(pick(
-        1.0 - normalise(stats["pct_zero_star_repos"], "pct_zero_star_repos"),
-        PRESTIGE_LADDER,
-    ))
-
-    # 5. Churn Ratio → Stability (skin texture)
+    # 4. Churn Ratio → Stability (skin texture)
     #    High raw value = more churn = less stable; invert
     traits.append(pick(
         1.0 - normalise(stats["churn_ratio"], "churn_ratio"),

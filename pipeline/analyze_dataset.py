@@ -41,11 +41,6 @@ COL_CLOSING_ISSUES = "closing_issues_count"
 COL_FILES          = "files"
 COL_PR_ID          = "id"
 
-# Column names in the Repositories_{agent} table (used for star count lookup)
-REPO_CONFIG_TEMPLATE = "Repositories_{agent}"
-COL_REPO_PR_ID       = "pr_id"        # joins to COL_PR_ID in PullRequests
-COL_REPO_STARS       = "stargazer_count"
-
 OUTPUT_FILE = "findings.json"
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -73,20 +68,7 @@ def get_extensions(files_list: list) -> List[str]:
     return exts
 
 
-def build_stars_lookup(agent_name: str) -> Dict[str, int]:
-    """Stream Repositories_{agent} and return {pr_id: stargazer_count}."""
-    config = REPO_CONFIG_TEMPLATE.format(agent=agent_name)
-    print(f"  Loading {config} for star counts …", flush=True)
-    ds = load_dataset(DATASET_NAME, config, split="train", streaming=True)
-    return {
-        row[COL_REPO_PR_ID]: (row.get(COL_REPO_STARS) or 0)
-        for row in ds
-    }
-
-
 def analyze_agent(agent_name: str) -> Dict:
-    stars_lookup = build_stars_lookup(agent_name)
-
     config = f"PullRequests_{agent_name}"
     print(f"  Loading {config} …", flush=True)
     ds = load_dataset(DATASET_NAME, config, split="train", streaming=True)
@@ -96,7 +78,6 @@ def analyze_agent(agent_name: str) -> Dict:
     churn_ratios: List[float] = []
     merges    = 0
     total     = 0
-    zero_star = 0
     issue_linked = 0
     ext_counter: Counter = Counter()
 
@@ -115,10 +96,6 @@ def analyze_agent(agent_name: str) -> Dict:
                 minutes = (merged_at - created_at).total_seconds() / 60
                 if minutes >= 0:
                     merge_times.append(minutes)
-
-        stars = stars_lookup.get(row.get(COL_PR_ID), 1)  # default 1 = not zero-star
-        if stars == 0:
-            zero_star += 1
 
         if (row.get(COL_CLOSING_ISSUES) or 0) > 0:
             issue_linked += 1
@@ -139,7 +116,6 @@ def analyze_agent(agent_name: str) -> Dict:
         "median_pr_size":             round(statistics.median(pr_sizes), 2)       if pr_sizes       else 0,
         "merge_rate":                 round(merges / total, 4)                    if total          else 0,
         "median_merge_time_minutes":  round(statistics.median(merge_times), 2)    if merge_times    else 0,
-        "pct_zero_star_repos":        round(zero_star / total, 4)                 if total          else 0,
         "issue_linking_rate":         round(issue_linked / total, 4)              if total          else 0,
         "churn_ratio":                round(statistics.median(churn_ratios), 4)   if churn_ratios   else 0,
         "top_file_types":             top_file_types,
@@ -152,7 +128,6 @@ def print_summary(findings: Dict) -> None:
         ("median_pr_size",            "Median PR Size (lines)","{:>10.1f}"),
         ("merge_rate",                "Merge Rate",            "{:>10.1%}"),
         ("median_merge_time_minutes", "Merge Time (min)",      "{:>10.1f}"),
-        ("pct_zero_star_repos",       "Zero-Star Repos %",     "{:>10.1%}"),
         ("issue_linking_rate",        "Issue Linking Rate",    "{:>10.1%}"),
         ("churn_ratio",               "Churn Ratio",           "{:>10.4f}"),
     ]

@@ -4,7 +4,7 @@
     "median_pr_size": 60.0,
     "merge_rate": 0.7512,
     "median_merge_time_minutes": 25.66,
-    "pct_zero_star_repos": 0.5691,
+
     "issue_linking_rate": 0.0858,
     "churn_ratio": 0.3679,
     "top_file_types": [
@@ -20,7 +20,7 @@
     "median_pr_size": 376.0,
     "merge_rate": 0.8643,
     "median_merge_time_minutes": 10.58,
-    "pct_zero_star_repos": 0.5431,
+
     "issue_linking_rate": 0.203,
     "churn_ratio": 0.1182,
     "top_file_types": [
@@ -36,7 +36,7 @@
     "median_pr_size": 53,
     "merge_rate": 0.8755,
     "median_merge_time_minutes": 0.47,
-    "pct_zero_star_repos": 0.7537,
+
     "issue_linking_rate": 0.0019,
     "churn_ratio": 0.225,
     "top_file_types": [
@@ -52,7 +52,7 @@
     "median_pr_size": 212,
     "merge_rate": 0.6222,
     "median_merge_time_minutes": 37.34,
-    "pct_zero_star_repos": 0.5973,
+
     "issue_linking_rate": 0.5207,
     "churn_ratio": 0.0609,
     "top_file_types": [
@@ -68,7 +68,7 @@
     "median_pr_size": 112.0,
     "merge_rate": 0.7728,
     "median_merge_time_minutes": 1.63,
-    "pct_zero_star_repos": 0.7566,
+
     "issue_linking_rate": 0.1183,
     "churn_ratio": 0.291,
     "top_file_types": [
@@ -84,7 +84,7 @@
     "median_pr_size": 165,
     "merge_rate": 0.6198,
     "median_merge_time_minutes": 20.92,
-    "pct_zero_star_repos": 0.6411,
+
     "issue_linking_rate": 0.0196,
     "churn_ratio": 0.1057,
     "top_file_types": [

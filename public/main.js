@@ -38,13 +38,6 @@ const STATS = [
     higherIsBetter: false,
   },
   {
-    key: 'pct_zero_star_repos',
-    label: 'Zero-Star Repos',
-    fmt: v => `${(v * 100).toFixed(1)}%`,
-    barColor: 'teal',
-    higherIsBetter: false,
-  },
-  {
     key: 'issue_linking_rate',
     label: 'Issue Linking Rate',
     fmt: v => `${(v * 100).toFixed(1)}%`,
@@ -92,12 +85,12 @@ const ANNOTATIONS = [
 
 /* ── Fallback data (used if findings.json fails to load) ── */
 const FALLBACK_DATA = {
-  human:       { total_prs:20910, median_pr_size:60,    merge_rate:0.7512, median_merge_time_minutes:25.66, pct_zero_star_repos:0.5691, issue_linking_rate:0.0858, churn_ratio:0.3679, top_file_types:['.ts','.py','.md','.tsx','.java'] },
-  claude_code: { total_prs:19148, median_pr_size:376,   merge_rate:0.8643, median_merge_time_minutes:10.58, pct_zero_star_repos:0.5431, issue_linking_rate:0.2030, churn_ratio:0.1182, top_file_types:['.ts','.md','.py','.tsx','.json'] },
-  copilot:     { total_prs:18563, median_pr_size:212,   merge_rate:0.6222, median_merge_time_minutes:37.34, pct_zero_star_repos:0.5973, issue_linking_rate:0.5207, churn_ratio:0.0609, top_file_types:['.md','.ts','.py','.js','.json'] },
-  jules:       { total_prs:18468, median_pr_size:112,   merge_rate:0.7728, median_merge_time_minutes:1.63,  pct_zero_star_repos:0.7566, issue_linking_rate:0.1183, churn_ratio:0.2910, top_file_types:['.py','.js','.md','.ts','.tsx']  },
-  devin:       { total_prs:14045, median_pr_size:165,   merge_rate:0.6198, median_merge_time_minutes:20.92, pct_zero_star_repos:0.6411, issue_linking_rate:0.0196, churn_ratio:0.1057, top_file_types:['.ts','.tsx','.py','.md','.json'] },
-  codex:       { total_prs:20835, median_pr_size:53,    merge_rate:0.8755, median_merge_time_minutes:0.47,  pct_zero_star_repos:0.7537, issue_linking_rate:0.0019, churn_ratio:0.2250, top_file_types:['.py','.js','.md','.tsx','.ts']  },
+  human:       { total_prs:20910, median_pr_size:60,    merge_rate:0.7512, median_merge_time_minutes:25.66, issue_linking_rate:0.0858, churn_ratio:0.3679, top_file_types:['.ts','.py','.md','.tsx','.java'] },
+  claude_code: { total_prs:19148, median_pr_size:376,   merge_rate:0.8643, median_merge_time_minutes:10.58, issue_linking_rate:0.2030, churn_ratio:0.1182, top_file_types:['.ts','.md','.py','.tsx','.json'] },
+  copilot:     { total_prs:18563, median_pr_size:212,   merge_rate:0.6222, median_merge_time_minutes:37.34, issue_linking_rate:0.5207, churn_ratio:0.0609, top_file_types:['.md','.ts','.py','.js','.json'] },
+  jules:       { total_prs:18468, median_pr_size:112,   merge_rate:0.7728, median_merge_time_minutes:1.63,  issue_linking_rate:0.1183, churn_ratio:0.2910, top_file_types:['.py','.js','.md','.ts','.tsx']  },
+  devin:       { total_prs:14045, median_pr_size:165,   merge_rate:0.6198, median_merge_time_minutes:20.92, issue_linking_rate:0.0196, churn_ratio:0.1057, top_file_types:['.ts','.tsx','.py','.md','.json'] },
+  codex:       { total_prs:20835, median_pr_size:53,    merge_rate:0.8755, median_merge_time_minutes:0.47,  issue_linking_rate:0.0019, churn_ratio:0.2250, top_file_types:['.py','.js','.md','.tsx','.ts']  },
 };
 
 /* ── File type tag color map ── */
