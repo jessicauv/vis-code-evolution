@@ -22,6 +22,14 @@
 ───────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+.ethics-note::selection,
+.ethics-note *::selection,
+.conclusion-body::selection,
+.conclusion-body *::selection {
+  background: var(--orange);
+  color: #1a1208;
+}
+
 html { scroll-behavior: smooth; }
 
 body {
@@ -506,6 +514,10 @@ a:hover { text-decoration: underline; }
   border-color: rgba(240,224,192,0.5);
 }
 
+.slider-label-item.active:hover span {
+  color: #1a1208;
+}
+
 /* ─────────────────────────────────────────────
    FOOTER
 ───────────────────────────────────────────── */
@@ -648,7 +660,7 @@ a:hover { text-decoration: underline; }
   background: rgba(10,7,3,0.88);
   border: 1.5px solid #7a5428;
   border-radius: 8px;
-  padding: 28px 32px;
+  padding: 1px 32px 28px;
   max-width: 640px;
   width: 100%;
   position: relative;
@@ -672,10 +684,15 @@ a:hover { text-decoration: underline; }
 .conclusion-inner::before { top: -5px;    left:  -5px; }
 .conclusion-inner::after  { bottom: -5px; right: -5px; }
 
+.conclusion-inner .stats-heading {
+  color: var(--orange);
+}
+
 .conclusion-body {
   font-size: 0.95rem;
   line-height: 1.75;
   color: var(--text-muted);
+  text-align: center;
 }
 
 @media (max-width: 900px) {

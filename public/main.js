@@ -330,8 +330,19 @@ function switchAgent(newIdx, animate) {
   const data  = findings[agent.key] || {};
 
   /* ── 1. Crossfade images ── */
-  const prevKey = wasEnd ? agent.key : AGENTS[prevIdx].key;
-  const prevImg = document.getElementById('img-' + prevKey);
+  // When returning from End, all images kept their pre-End state — reset them all first
+  if (wasEnd) {
+    AGENTS.forEach(a => {
+      if (a.key === 'end') return;
+      const img = document.getElementById('img-' + a.key);
+      if (!img) return;
+      img.classList.remove('active');
+      img.style.position = 'absolute';
+      img.style.opacity  = '0';
+    });
+  }
+
+  const prevImg = document.getElementById('img-' + AGENTS[prevIdx].key);
   const nextImg = document.getElementById('img-' + agent.key);
 
   if (prevIdx !== newIdx || !animate) {
