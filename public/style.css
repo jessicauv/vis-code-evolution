@@ -642,6 +642,12 @@ a:hover { text-decoration: underline; }
   color: var(--text);
 }
 
+.mobile-ann-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
 /* ─────────────────────────────────────────────
    CONCLUSION PANEL
 ───────────────────────────────────────────── */

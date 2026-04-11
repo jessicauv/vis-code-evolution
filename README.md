@@ -1,7 +1,7 @@
 # Visualizing Code Evolution
 
 ## Project Overview
-Visualizing Code Evolution is a web app that compares how human developers and AI coding agents write code using real pull request data from over 100,000 PRs (see [MOSAIC-agentic-3m](https://huggingface.co/datasets/AISE-TUDelft/MOSAIC-agentic-3m) HuggingFace dataset). Slide between six authors (Human, Claude Code, GitHub Copilot, Google Jules, Devin, and Codex) and see how their coding behaviour differs across metrics like PR size, merge rate, and merge speed. Each author is represented by a generated portrait (inspired by "Handsome Squidward"), whose visual traits map directly to their stats.
+Visualizing Code Evolution is a web app that compares how human developers and AI coding agents write code using real pull request data from over 100,000 PRs (see [MOSAIC-agentic-3m](https://huggingface.co/datasets/AISE-TUDelft/MOSAIC-agentic-3m) HuggingFace dataset). Slide between six authors (Human, Claude Code, GitHub Copilot, Google Jules, Cognition AI Devin, and OpenAI Codex) and see how their coding behaviour differs across metrics like PR size, merge rate, and merge speed. Each author is represented by a generated portrait (inspired by "Handsome Squidward"), whose visual traits map directly to their stats.
 
 The project is meant to open up conversations on accountability, agency, and the emerging relationship between humans and the systems that increasingly co-author our digital world.
 

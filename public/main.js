@@ -10,8 +10,8 @@ const AGENTS = [
   { key: 'claude_code', label: 'Claude Code'    },
   { key: 'copilot',     label: 'GitHub Copilot' },
   { key: 'jules',       label: 'Google Jules'   },
-  { key: 'devin',       label: 'Devin'          },
-  { key: 'codex',       label: 'Codex'          },
+  { key: 'devin',       label: 'Cognition AI Devin'    },
+  { key: 'codex',       label: 'OpenAI Codex'          },
   { key: 'end',         label: 'End'            },
 ];
 
@@ -282,6 +282,7 @@ function buildMobileAnnotations() {
       <div class="mobile-ann-dot"></div>
       <div class="mobile-ann-text">
         <span class="mobile-ann-val" id="mob-${ann.id}">—</span>
+        <span class="mobile-ann-hint" id="mob-${ann.id}-hint"></span>
       </div>
     `;
     strip.appendChild(item);
@@ -433,6 +434,8 @@ function switchAgent(newIdx, animate) {
     }
 
     if (mobEl) mobEl.textContent = fmtVal;
+    const mobHintEl = document.getElementById('mob-' + ann.id + '-hint');
+    if (mobHintEl) mobHintEl.textContent = ctx;
   });
 
   /* ── 4. Animate stats bars ── */
