@@ -5,6 +5,10 @@ Visualizing Code Evolution is a web app that compares how human developers and A
 
 The project is meant to open up conversations on accountability, agency, and the emerging relationship between humans and the systems that increasingly co-author our digital world.
 
+A future goal of this project is to continually self-update with live Github data.
+
+[Demo Video](https://youtu.be/6HjMiUZ6xjU)
+
 <!-- Add GIF -->
 
 ## Technical Architecture
@@ -15,7 +19,7 @@ Static HTML / CSS / JavaScript website. Python data pipeline (run locally) to ge
 **Technical Features**
 - Streams and analyzes the  (~100k+ PRs) via a Python pipeline
 - Stats (see table below) computed per agent and stored in `findings.json`
-- AI-generated portraits via DALL-E 3 — visual traits (head proportions, hair style, expression) are derived from the same stats using 5-rung description ladders
+- AI-generated portraits — visual traits (head proportions, hair style, expression) are derived from the same stats using 5-rung description ladders
 - Animated character crossfades and bar chart transitions using GSAP
 - Annotation cards on each portrait dynamically compute and display the ladder-derived trait text directly from `findings.json`
 
@@ -34,6 +38,7 @@ Static HTML / CSS / JavaScript website. Python data pipeline (run locally) to ge
 
 ### Local Development Setup
 
+Steps if you'd like to run the whole setup (including analyzing the data + generating images)
 ```bash
 # Install Python dependencies
 pip install -r requirements.txt
@@ -45,7 +50,7 @@ cp .env.example .env
 # Run the pipeline (from the pipeline/ directory)
 cd pipeline
 python analyze_dataset.py    # Step 1: generate findings.json
-python generate_prompts.py   # Step 2: generate DALL-E prompts
+python generate_prompts.py   # Step 2: generate AI image prompts
 # Delete existing images in public/images before running Step 3
 python generate_images.py    # Step 3 (optional): generate portraits + copy findings.json to public/
                              # If you skip Step 3, generate portraits using your preferred method,
@@ -63,5 +68,5 @@ npx serve .
 **AI Usage Statement**<br>
 This project leverages AI technologies in the following ways:
 
-- AI in the application: DALL-E 3 is used to generate the character portraits based on prompts derived from pull request statistics. No AI runs at runtime — all images are pre-generated.
+- AI in the application: Used for generating images used for the website. No AI runs at runtime — all images are pre-generated.
 - AI in development: Used AI-assisted tools such as Claude Code. All AI-generated code was reviewed & tested.
