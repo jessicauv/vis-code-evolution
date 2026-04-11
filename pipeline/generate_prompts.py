@@ -53,8 +53,7 @@ MERGE_RATE_LADDER = [
     "visible facial bruises, dented crooked nose, battle-worn expression, "
     "dejected sad eyes, rejection energy",
     "faint scuff marks on skin, slightly downturned mouth, weary look",
-    "neutral composed expression, slightly uneven skin tone, "
-    "hint of cautious optimism",
+    "neutral composed expression, variation in skin tone",
     "clear healthy skin, symmetrical features, calm confident expression",
     "glowing luminous skin, perfectly symmetrical face, "
     "confident smirk, radiant approved-chad energy",
@@ -62,9 +61,9 @@ MERGE_RATE_LADDER = [
 # ──────────────────────────────────────────────────────────────────────────────
 
 BASE_PROMPT = (
-    "Hyper-realistic close-up portrait of Handsome Squidward's head and face on a pure white background. "
-    "Photorealistic cartoon style. Framed from the neck up, full face visible. Slightly uncanny and exaggerated. "
-    "Facing slightly toward the viewer. Professional studio lighting. Ultra-detailed. "
+    "Cartoon realism close-up portrait, neck-up framing, full face visible, centered on a pure white background. "
+    "Clearly non-photorealistic, stylized cartoon character, not a real human. "
+    "Professional studio lighting with soft shadows and high detail. "
 )
 
 
@@ -115,7 +114,6 @@ def build_prompt(agent_key: str, stats: dict) -> str:
     return (
         f"{BASE_PROMPT}"
         f"{trait_str} "
-        f"This character embodies the coding personality of: {label}."
     )
 
 

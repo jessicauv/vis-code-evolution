@@ -56,21 +56,65 @@ const STATS = [
 
 /* ── Annotation definitions ── */
 const ANNOTATIONS = [
-  {
-    id:      'scope',
-    stat:    'median_pr_size',
-    hint:    'median PR size',
-    fmt:     v => `${Math.round(v)} ln`,
-    context: v => v > 200 ? 'sweeping, overengineered scope' : v > 100 ? 'moderate scope' : 'tight, focused changes',
-  },
-  {
-    id:      'success',
-    stat:    'merge_rate',
-    hint:    'merge rate',
-    fmt:     v => `${(v * 100).toFixed(1)}%`,
-    context: v => v >= 0.80 ? 'high approval, confident output' : v >= 0.70 ? 'solid success rate' : 'frequent rejections',
-  },
+  { id: 'scope'   },
+  { id: 'success' },
+  { id: 'note'    },
 ];
+
+/* ── Annotation display ladders ──────────────────────────────────────
+   Each ladder has 5 rungs [shortTrait, dataHint], index 0 = lowest.
+   These mirror the normalization ranges used in generate_prompts.py.  ── */
+const ANN_STAT_RANGES = {
+  median_pr_size:            [50,   400],
+  median_merge_time_minutes: [0,    40],
+  merge_rate:                [0.60, 0.90],
+};
+
+// PR Size → head proportions (no inversion; larger PR = higher rung)
+const ANN_SCOPE_LADDER = [
+  ['perfectly proportioned head',       'small PRs, focused changes'],
+  ['slightly wide forehead',            'modest PR size'],
+  ['prominent forehead',                'medium-large PRs'],
+  ['large bulging forehead',            'large PRs, broad changes'],
+  ['massive giga-brain head',           'massive PRs, sweeping scope'],
+];
+
+// Merge Time → hair style (inverted; fast merge = high rung)
+const ANN_SPEED_LADDER = [
+  ['wild tangled hair',                 'very slow to merge'],
+  ['disheveled hair',                   'slower merge time'],
+  ['neatly combed hair',                'moderate merge speed'],
+  ['sharp side-parted hair',            'fast merge time'],
+  ['aerodynamically slicked-back hair', 'near-instant merges'],
+];
+
+// Merge Rate → expression (no inversion; higher rate = higher rung)
+const ANN_RATE_LADDER = [
+  ['battle-worn, rejected expression',  'low merge rate'],
+  ['weary, uncertain gaze',             'below-average acceptance'],
+  ['neutral composed expression',       'moderate merge rate'],
+  ['confident, calm expression',        'high merge rate'],
+  ['radiating approval energy',         'very high merge rate'],
+];
+
+function getAnnotationText(annId, data) {
+  function rung(value, key, invert) {
+    const [lo, hi] = ANN_STAT_RANGES[key];
+    let score = Math.max(0, Math.min(1, (value - lo) / (hi - lo)));
+    if (invert) score = 1 - score;
+    return Math.round(score * 4);
+  }
+  if (annId === 'scope') {
+    return ANN_SCOPE_LADDER[rung(data.median_pr_size ?? 0, 'median_pr_size', false)];
+  }
+  if (annId === 'success') {
+    return ANN_SPEED_LADDER[rung(data.median_merge_time_minutes ?? 0, 'median_merge_time_minutes', true)];
+  }
+  if (annId === 'note') {
+    return ANN_RATE_LADDER[rung(data.merge_rate ?? 0, 'merge_rate', false)];
+  }
+  return ['—', ''];
+}
 
 /* ── Fallback data (used if findings.json fails to load) ── */
 const FALLBACK_DATA = {
@@ -237,7 +281,6 @@ function buildMobileAnnotations() {
     item.innerHTML = `
       <div class="mobile-ann-dot"></div>
       <div class="mobile-ann-text">
-        <span class="mobile-ann-label">${capitalise(ann.id)}</span>
         <span class="mobile-ann-val" id="mob-${ann.id}">—</span>
       </div>
     `;
@@ -373,9 +416,7 @@ function switchAgent(newIdx, animate) {
     const cardEl  = valEl ? valEl.closest('.ann-card') : null;
     const mobEl   = document.getElementById('mob-' + ann.id);
 
-    const raw = data[ann.stat];
-    const fmtVal = raw != null ? ann.fmt(raw) : '—';
-    const ctx    = raw != null ? ann.context(raw) : '';
+    const [fmtVal, ctx] = isEnd ? ['—', ''] : getAnnotationText(ann.id, data);
 
     if (animate && typeof gsap !== 'undefined' && cardEl) {
       gsap.to(cardEl, {

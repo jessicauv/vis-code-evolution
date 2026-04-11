@@ -27,7 +27,7 @@ FINDINGS_FILE = "findings.json"
 OUTPUT_DIR    = Path("public/images")
 
 IMAGE_MODEL   = "dall-e-3"
-IMAGE_SIZE    = "1024x1792"   # portrait — shows the full body
+IMAGE_SIZE    = "1024x1024"
 IMAGE_QUALITY = "hd"
 # ──────────────────────────────────────────────────────────────────────────────
 

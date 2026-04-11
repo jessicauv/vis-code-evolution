@@ -196,7 +196,7 @@ a:hover { text-decoration: underline; }
 }
 
 .ann-line {
-  width: 24px;
+  width: 40px;
   height: 1.5px;
   background: var(--orange);
   flex-shrink: 0;
@@ -204,7 +204,7 @@ a:hover { text-decoration: underline; }
 }
 
 .ann-card {
-  background: rgba(8,6,2,0.92);
+  background: rgba(8,6,2,0.55);
   border: 1.5px solid var(--orange);
   border-radius: 6px;
   padding: 7px 10px 6px;
@@ -226,7 +226,7 @@ a:hover { text-decoration: underline; }
 
 .ann-value {
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--text);
   line-height: 1.2;
 }

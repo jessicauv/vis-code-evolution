@@ -41,25 +41,33 @@
         <img class="char-img"        id="img-devin"       src="images/devin.png"       alt="Devin"             onerror="this.src='images/placeholder.svg'" />
         <img class="char-img"        id="img-codex"       src="images/codex.png"       alt="Codex"             onerror="this.src='images/placeholder.svg'" />
 
-        <!-- Floating annotation: Scope (forehead) — right side -->
-        <div class="annotation ann-right" id="ann-scope" style="top: 16%; left: 56%;">
+        <!-- Floating annotation: Speed / Merge Time (forehead) — left side -->
+        <div class="annotation ann-left" id="ann-success" style="top: 16%; right: 58%;">
           <div class="ann-dot"></div>
           <div class="ann-line"></div>
           <div class="ann-card">
-            <span class="ann-label">Scope</span>
+            <span class="ann-value" id="ann-success-val">—</span>
+            <span class="ann-hint" id="ann-success-hint"></span>
+          </div>
+        </div>
+
+        <!-- Floating annotation: Scope / PR Size (eyes) — right side -->
+        <div class="annotation ann-right" id="ann-scope" style="top: 36%; left: 59%;">
+          <div class="ann-dot"></div>
+          <div class="ann-line"></div>
+          <div class="ann-card">
             <span class="ann-value" id="ann-scope-val">—</span>
             <span class="ann-hint" id="ann-scope-hint">median PR size</span>
           </div>
         </div>
 
-        <!-- Floating annotation: Success Rate (eyes) — left side -->
-        <div class="annotation ann-left" id="ann-success" style="top: 36%; right: 55%;">
+        <!-- Floating annotation: Approval / Merge Rate (cheek) — left side -->
+        <div class="annotation ann-left" id="ann-note" style="top: 57%; right: 58%;">
           <div class="ann-dot"></div>
           <div class="ann-line"></div>
           <div class="ann-card">
-            <span class="ann-label">Success Rate</span>
-            <span class="ann-value" id="ann-success-val">—</span>
-            <span class="ann-hint" id="ann-success-hint">merge rate</span>
+            <span class="ann-value" id="ann-note-val">—</span>
+            <span class="ann-hint" id="ann-note-hint"></span>
           </div>
         </div>
 

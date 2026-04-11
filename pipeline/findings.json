@@ -5,7 +5,6 @@
     "merge_rate": 0.7512,
     "median_merge_time_minutes": 25.66,
     "issue_linking_rate": 0.0858,
-    "survival_rate": 0.5263,
     "top_file_types": [
       ".ts",
       ".py",
@@ -20,7 +19,6 @@
     "merge_rate": 0.8643,
     "median_merge_time_minutes": 10.58,
     "issue_linking_rate": 0.203,
-    "survival_rate": 0.7816,
     "top_file_types": [
       ".ts",
       ".md",
@@ -35,7 +33,6 @@
     "merge_rate": 0.8755,
     "median_merge_time_minutes": 0.47,
     "issue_linking_rate": 0.0019,
-    "survival_rate": 0.8,
     "top_file_types": [
       ".py",
       ".js",
@@ -50,7 +47,6 @@
     "merge_rate": 0.6222,
     "median_merge_time_minutes": 37.34,
     "issue_linking_rate": 0.5207,
-    "survival_rate": 0.9381,
     "top_file_types": [
       ".md",
       ".ts",
@@ -65,7 +61,6 @@
     "merge_rate": 0.7728,
     "median_merge_time_minutes": 1.63,
     "issue_linking_rate": 0.1183,
-    "survival_rate": 0.7698,
     "top_file_types": [
       ".py",
       ".js",
@@ -80,7 +75,6 @@
     "merge_rate": 0.6198,
     "median_merge_time_minutes": 20.92,
     "issue_linking_rate": 0.0196,
-    "survival_rate": 0.8298,
     "top_file_types": [
       ".ts",
       ".tsx",
