@@ -110,11 +110,7 @@ def build_trait_fragments(stats: dict) -> list[str]:
 def build_prompt(agent_key: str, stats: dict) -> str:
     traits = build_trait_fragments(stats)
     trait_str = ". ".join(traits) + "." if traits else ""
-    label = agent_key.replace("_", " ").title()
-    return (
-        f"{BASE_PROMPT}"
-        f"{trait_str} "
-    )
+    return f"{BASE_PROMPT}{trait_str} "
 
 
 def main() -> None:

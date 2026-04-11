@@ -215,15 +215,6 @@ a:hover { text-decoration: underline; }
   box-shadow: 0 3px 14px rgba(224,112,32,0.25), inset 0 0 20px rgba(0,0,0,0.5);
 }
 
-.ann-label {
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--orange);
-  line-height: 1.2;
-}
-
 .ann-value {
   font-size: 0.82rem;
   font-weight: 600;
@@ -411,11 +402,6 @@ a:hover { text-decoration: underline; }
   border-radius: 99px;
   margin: 10px 0;
   pointer-events: none;
-}
-
-/* Fill is not needed — gradient covers full track */
-.slider-fill {
-  display: none;
 }
 
 /* Stop dots */
@@ -628,14 +614,6 @@ a:hover { text-decoration: underline; }
   gap: 1px;
 }
 
-.mobile-ann-label {
-  font-size: 0.68rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--orange);
-}
-
 .mobile-ann-val {
   font-size: 0.85rem;
   font-weight: 700;
@@ -666,7 +644,7 @@ a:hover { text-decoration: underline; }
   background: rgba(10,7,3,0.65);
   border: 1.5px solid #7a5428;
   border-radius: 8px;
-  padding: 1px 32px 28px;
+  padding: 20px 32px 28px;
   max-width: 640px;
   width: 100%;
   position: relative;

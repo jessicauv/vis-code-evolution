@@ -1,0 +1,86 @@
+{
+  "human": {
+    "total_prs": 20910,
+    "median_pr_size": 60.0,
+    "merge_rate": 0.7512,
+    "median_merge_time_minutes": 25.66,
+    "issue_linking_rate": 0.0858,
+    "top_file_types": [
+      ".ts",
+      ".py",
+      ".md",
+      ".tsx",
+      ".java"
+    ]
+  },
+  "claude_code": {
+    "total_prs": 19148,
+    "median_pr_size": 376.0,
+    "merge_rate": 0.8643,
+    "median_merge_time_minutes": 10.58,
+    "issue_linking_rate": 0.203,
+    "top_file_types": [
+      ".ts",
+      ".md",
+      ".py",
+      ".tsx",
+      ".json"
+    ]
+  },
+  "codex": {
+    "total_prs": 20835,
+    "median_pr_size": 53,
+    "merge_rate": 0.8755,
+    "median_merge_time_minutes": 0.47,
+    "issue_linking_rate": 0.0019,
+    "top_file_types": [
+      ".py",
+      ".js",
+      ".md",
+      ".tsx",
+      ".ts"
+    ]
+  },
+  "copilot": {
+    "total_prs": 18563,
+    "median_pr_size": 212,
+    "merge_rate": 0.6222,
+    "median_merge_time_minutes": 37.34,
+    "issue_linking_rate": 0.5207,
+    "top_file_types": [
+      ".md",
+      ".ts",
+      ".py",
+      ".js",
+      ".json"
+    ]
+  },
+  "jules": {
+    "total_prs": 18468,
+    "median_pr_size": 112.0,
+    "merge_rate": 0.7728,
+    "median_merge_time_minutes": 1.63,
+    "issue_linking_rate": 0.1183,
+    "top_file_types": [
+      ".py",
+      ".js",
+      ".md",
+      ".ts",
+      ".tsx"
+    ]
+  },
+  "devin": {
+    "total_prs": 14045,
+    "median_pr_size": 165,
+    "merge_rate": 0.6198,
+    "median_merge_time_minutes": 20.92,
+    "issue_linking_rate": 0.0196,
+    "top_file_types": [
+      ".ts",
+      ".tsx",
+      ".py",
+      ".md",
+      ".json"
+    ]
+  }
+}

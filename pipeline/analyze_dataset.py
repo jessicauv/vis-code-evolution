@@ -39,7 +39,6 @@ COL_MERGED_AT      = "merged_at"
 COL_CREATED_AT     = "created_at"
 COL_CLOSING_ISSUES = "closing_issues_count"
 COL_FILES          = "files"
-COL_PR_ID          = "id"
 
 OUTPUT_FILE = "findings.json"
 # ──────────────────────────────────────────────────────────────────────────────

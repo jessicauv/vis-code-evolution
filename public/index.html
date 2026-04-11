@@ -15,11 +15,6 @@
     <div class="header-inner">
       <h1 class="site-title">Visualizing Code Evolution</h1>
       <p class="site-subtitle">Human & Autonomous Agent</p>
-      <!-- <p class="ethics-note">
-        An unusual visualization of human & agent code contributions to open up conversations
-        on accountability, agency, and the emerging social contract between humans and the systems that
-        increasingly co-author our digital world.
-      </p> -->
       <div class="header-emblem">◆</div>
     </div>
   </header>
@@ -57,7 +52,7 @@
           <div class="ann-line"></div>
           <div class="ann-card">
             <span class="ann-value" id="ann-scope-val">—</span>
-            <span class="ann-hint" id="ann-scope-hint">median PR size</span>
+            <span class="ann-hint" id="ann-scope-hint"></span>
           </div>
         </div>
 
@@ -77,8 +72,6 @@
 
     <!-- ── Right column: stats panel ── -->
     <div class="stats-col">
-      <span class="corner-dot corner-tr"></span>
-      <span class="corner-dot corner-bl"></span>
       <h2 class="stats-heading">Pull Request Stats</h2>
       <div class="stats-list" id="stats-list">
         <!-- Populated by main.js -->
@@ -90,8 +83,6 @@
   <!-- ── Conclusion panel (shown when slider reaches "End") ── -->
   <div id="conclusion-panel" style="display:none;">
     <div class="conclusion-inner">
-      <span class="corner-dot corner-tr"></span>
-      <span class="corner-dot corner-bl"></span>
       <h2 class="stats-heading">The Bottom Line</h2>
       <p class="conclusion-body">
         Agent-generated code is larger, faster to produce, and often quicker to replace.
@@ -114,12 +105,12 @@
         <div class="slider-track">
           <div class="slider-fill" id="slider-fill"></div>
           <div class="slider-stops" id="slider-stops">
-            <!-- 6 stop dots injected by JS -->
+            <!-- stop dots injected by JS -->
           </div>
         </div>
         <input type="range" id="agent-slider" class="range-input" min="0" max="6" step="1" value="0" aria-label="Select agent" />
         <div class="slider-labels" id="slider-labels">
-          <!-- 6 labels injected by JS -->
+          <!-- labels injected by JS -->
         </div>
       </div>
     </div>

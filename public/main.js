@@ -1,7 +1,7 @@
 /* ─────────────────────────────────────────────────────────────────
    Visualizing Code Evolution — main.js
-   Phase 2: live website that reads findings.json and animates
-   character images + stats panel when the user moves the slider.
+   Reads findings.json and animates character images + stats panel
+   when the user moves the slider.
 ─────────────────────────────────────────────────────────────────── */
 
 /* ── Agent definitions (slider order) ── */
@@ -289,10 +289,6 @@ function buildMobileAnnotations() {
   });
 
   col.appendChild(strip);
-}
-
-function capitalise(s) {
-  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 /* ────────────────────────────────────────────
