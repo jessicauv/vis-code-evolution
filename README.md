@@ -9,7 +9,7 @@ A future goal of this project is to continually self-update with live Github dat
 
 [Demo Video](https://youtu.be/6HjMiUZ6xjU)
 
-<!-- Add GIF -->
+![Alt text](public/images/app.gif)
 
 ## Technical Architecture
 
@@ -36,7 +36,7 @@ Static HTML / CSS / JavaScript website. Python data pipeline (run locally) to ge
 
 🔗 The app is live & ready to use - <a href="https://vis-code-evolution.vercel.app">Try It Out</a>
 
-### Local Development Setup
+**Local Development Setup**
 
 Steps if you'd like to run the whole setup (including analyzing the data + generating images)
 ```bash
@@ -69,4 +69,4 @@ npx serve .
 This project leverages AI technologies in the following ways:
 
 - AI in the application: Used for generating images used for the website. No AI runs at runtime — all images are pre-generated.
-- AI in development: Used AI-assisted tools such as Claude Code. All AI-generated code was reviewed & tested.
+- AI in development: Used AI-assisted tools such as Claude Code and ChatGPT. All AI-generated code was reviewed & tested.
