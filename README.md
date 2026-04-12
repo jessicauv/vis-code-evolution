@@ -9,7 +9,7 @@ A future goal of this project is to continually self-update with live Github dat
 
 [Demo Video](https://youtu.be/6HjMiUZ6xjU)
 
-![Alt text](public/images/app.gif)
+![App gif](public/images/app.gif)
 
 ## Technical Architecture
 
